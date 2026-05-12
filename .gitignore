@@ -1,0 +1,14 @@
+node_modules/
+*.mp3
+*.wav
+*.flac
+*.ogg
+*.log
+.env
+.env.local
+.DS_Store
+
+# Local Claude Code state — never commit (may contain API keys in dev)
+.claude/settings.local.json
+# Workspace-root .mcp.json only — the plugin's own inworld-tts-mcp/.mcp.json must ship
+/.mcp.json

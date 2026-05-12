@@ -1,0 +1,18 @@
+{
+  "name": "inworld",
+  "version": "0.6.0",
+  "description": "Comprehensive Inworld AI integration for any project: TTS-2 (100+ languages, steering, streaming), STT (batch + streaming), Realtime voice agents, LLM Router, voice cloning, voice design, and LLM+TTS combined — wired up by Claude Code in seconds.",
+  "author": {
+    "name": "Inworld AI",
+    "url": "https://inworld.ai"
+  },
+  "homepage": "https://docs.inworld.ai",
+  "license": "MIT",
+  "keywords": ["tts", "stt", "realtime", "router", "llm", "speech", "voice", "audio", "inworld", "tts-2"],
+  "userConfig": {
+    "api_key": {
+      "description": "Your Inworld API key (Base64-encoded). Get it from https://platform.inworld.ai/api-keys",
+      "sensitive": true
+    }
+  }
+}
