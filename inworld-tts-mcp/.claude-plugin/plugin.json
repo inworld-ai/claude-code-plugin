@@ -11,6 +11,8 @@
   "keywords": ["tts", "stt", "realtime", "router", "llm", "speech", "voice", "audio", "inworld", "tts-2"],
   "userConfig": {
     "api_key": {
+      "type": "string",
+      "title": "Inworld API Key",
       "description": "Your Inworld API key (Base64-encoded). Get it from https://platform.inworld.ai/api-keys",
       "sensitive": true
     }
