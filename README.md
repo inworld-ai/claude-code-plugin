@@ -37,7 +37,7 @@ The plugin's MCP server exposes 9 tools that Claude can call directly:
 
 | Tool | What it does |
 |---|---|
-| `list_voices` | Browse Inworld voices. Filters: `language`, `tags` (e.g. `['female','warm']`), `custom_only`. |
+| `list_voices` | Browse Inworld voices. Filters: `language`, `description_match` (keyword search of the voice description, e.g. `['warm']` — the reliable filter), `tags` (server-side tags, often empty today), `custom_only`. |
 | `synthesize_speech` | TTS-2 by default. Inline steering, `delivery_mode`, `WORD` or `CHARACTER` timestamps. |
 | `transcribe_audio` | Batch STT (file → text). Optional voice profile (age, gender, accent, emotion). |
 | `clone_voice` | Clone a voice from one or more audio samples. Returns a new `voiceId`. |

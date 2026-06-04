@@ -96,12 +96,14 @@ function extensionForEncoding(encoding) {
 // ---------------------------------------------------------------------------
 const server = new McpServer({
     name: "inworld",
-    version: "0.6.0",
+    version: "0.6.1",
 });
 // ----- Tool: list_voices -----
-server.tool("list_voices", "List available Inworld TTS voices. Optionally filter by language (ISO 639-1) and/or tags " +
-    "(gender, accent, age, etc. — e.g. ['female', 'british']). Tag filtering is applied client-side: " +
-    "voices match if any of their tags overlaps with the requested tags (case-insensitive).", {
+server.tool("list_voices", "List available Inworld TTS voices. Filter by language (ISO 639-1), by tags, and/or by " +
+    "description keywords. NOTE: Inworld voices currently return empty tags[] arrays, so the " +
+    "`tags` filter often matches nothing — use `description_match` to search the human-readable " +
+    "voice description instead (e.g. 'warm', 'british', 'narrator'), which is where those " +
+    "qualities actually live today.", {
     language: z
         .string()
         .optional()
@@ -109,14 +111,20 @@ server.tool("list_voices", "List available Inworld TTS voices. Optionally filter
     tags: z
         .array(z.string())
         .optional()
-        .describe("Tag filter applied client-side after fetch. Voices match if ANY tag overlaps " +
-        "(case-insensitive). Common tags: 'male', 'female', 'young', 'old', 'british', " +
-        "'american', 'warm', 'energetic'. Run without tags first to see what's available."),
+        .describe("Tag filter (client-side, case-insensitive ANY-overlap). Inworld voices usually have " +
+        "EMPTY tags today, so this often returns nothing — prefer description_match. Kept for " +
+        "when Inworld populates server-side tags."),
+    description_match: z
+        .array(z.string())
+        .optional()
+        .describe("Keyword filter against each voice's description text (case-insensitive). A voice " +
+        "matches if its description contains ANY of these substrings. This is the reliable " +
+        "way to find voices by quality, e.g. ['warm'], ['british','english accent'], ['narrator']."),
     custom_only: z
         .boolean()
         .optional()
         .describe("If true, return only voices created on your account (cloned/designed)."),
-}, async ({ language, tags, custom_only }) => {
+}, async ({ language, tags, description_match, custom_only }) => {
     const filter = language ? `?filter=language=${language}` : "";
     const data = await inworldFetch(`/tts/v1/voices${filter}`);
     let voices = data.voices.map((v) => ({
@@ -130,6 +138,13 @@ server.tool("list_voices", "List available Inworld TTS voices. Optionally filter
     if (tags && tags.length > 0) {
         const needles = tags.map((t) => t.toLowerCase());
         voices = voices.filter((v) => (v.tags ?? []).some((t) => needles.includes(t.toLowerCase())));
+    }
+    if (description_match && description_match.length > 0) {
+        const needles = description_match.map((t) => t.toLowerCase());
+        voices = voices.filter((v) => {
+            const desc = (v.description ?? "").toLowerCase();
+            return needles.some((n) => desc.includes(n));
+        });
     }
     if (custom_only) {
         voices = voices.filter((v) => v.isCustom);
