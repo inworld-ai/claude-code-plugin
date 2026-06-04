@@ -6,7 +6,7 @@ description: |
   so playback can start before synthesis completes. Use for chat agents, voice assistants,
   game narration, anywhere latency matters and batch synthesize_speech feels too slow.
 argument-hint: "[http|websocket]"
-allowed-tools: Read, Edit, Write, Glob, Grep, Bash, Agent, mcp__inworld__list_voices, mcp__inworld__synthesize_speech
+allowed-tools: Read, Edit, Write, Glob, Grep, Bash, Agent, mcp__plugin_inworld_inworld__list_voices, mcp__plugin_inworld_inworld__synthesize_speech
 ---
 
 # Add Streaming TTS Skill

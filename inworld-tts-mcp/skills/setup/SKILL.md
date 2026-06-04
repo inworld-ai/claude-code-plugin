@@ -7,7 +7,7 @@ description: |
   user can hear or transcribe audio within a minute.
   Use when the user wants to add Inworld voice features to a project for the first time.
 argument-hint: "[tts|stt|both]"
-allowed-tools: Read, Edit, Write, Glob, Grep, Bash, Agent, mcp__inworld__list_voices, mcp__inworld__synthesize_speech, mcp__inworld__transcribe_audio
+allowed-tools: Read, Edit, Write, Glob, Grep, Bash, Agent, mcp__plugin_inworld_inworld__list_voices, mcp__plugin_inworld_inworld__synthesize_speech, mcp__plugin_inworld_inworld__transcribe_audio
 ---
 
 # Inworld Setup Skill
