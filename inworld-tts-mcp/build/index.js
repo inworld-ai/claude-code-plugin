@@ -544,7 +544,7 @@ server.tool("publish_voice", "Publish a designed voice (from design_voice) to yo
         body.description = description;
     if (tags && tags.length > 0)
         body.tags = tags;
-    const data = await inworldFetch("/voices/v1/voices:publish", { method: "POST", body: JSON.stringify(body) });
+    const data = await inworldFetch(`/voices/v1/voices/${encodeURIComponent(voice_id)}:publish`, { method: "POST", body: JSON.stringify(body) });
     return {
         content: [
             {

@@ -805,7 +805,7 @@ server.tool(
     if (tags && tags.length > 0) body.tags = tags;
 
     const data = await inworldFetch<{ voice: { voiceId: string; displayName: string } }>(
-      "/voices/v1/voices:publish",
+      `/voices/v1/voices/${encodeURIComponent(voice_id)}:publish`,
       { method: "POST", body: JSON.stringify(body) }
     );
 
