@@ -136,15 +136,23 @@ server.tool("list_voices", "List available Inworld TTS voices. Filter by languag
         isCustom: v.isCustom,
     }));
     if (tags && tags.length > 0) {
-        const needles = tags.map((t) => t.toLowerCase());
-        voices = voices.filter((v) => (v.tags ?? []).some((t) => needles.includes(t.toLowerCase())));
+        const needles = tags
+            .map((t) => t.trim().toLowerCase())
+            .filter((t) => t.length > 0);
+        if (needles.length > 0) {
+            voices = voices.filter((v) => (v.tags ?? []).some((t) => needles.includes(t.trim().toLowerCase())));
+        }
     }
     if (description_match && description_match.length > 0) {
-        const needles = description_match.map((t) => t.toLowerCase());
-        voices = voices.filter((v) => {
-            const desc = (v.description ?? "").toLowerCase();
-            return needles.some((n) => desc.includes(n));
-        });
+        const needles = description_match
+            .map((t) => t.trim().toLowerCase())
+            .filter((t) => t.length > 0);
+        if (needles.length > 0) {
+            voices = voices.filter((v) => {
+                const desc = (v.description ?? "").toLowerCase();
+                return needles.some((n) => desc.includes(n));
+            });
+        }
     }
     if (custom_only) {
         voices = voices.filter((v) => v.isCustom);
