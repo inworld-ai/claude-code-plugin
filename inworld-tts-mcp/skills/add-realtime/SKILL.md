@@ -7,7 +7,7 @@ description: |
   end-to-end within minutes. Use when the user wants live two-way voice
   conversations powered by an LLM + Inworld TTS-2.
 argument-hint: "[browser|server|twilio]"
-allowed-tools: Read, Edit, Write, Glob, Grep, Bash, Agent, mcp__inworld__list_routers, mcp__inworld__chat_completion
+allowed-tools: Read, Edit, Write, Glob, Grep, Bash, Agent, mcp__plugin_inworld_inworld__list_routers, mcp__plugin_inworld_inworld__chat_completion
 ---
 
 # Add Realtime Skill

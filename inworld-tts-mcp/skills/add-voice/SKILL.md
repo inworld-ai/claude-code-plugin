@@ -6,7 +6,7 @@ description: |
   and wires the chosen voice into the right route, component, or function.
   Use when the user wants voice output in one specific place — not a full project setup.
 argument-hint: "[where to add voice, e.g. 'chat responses' or 'error toasts']"
-allowed-tools: Read, Edit, Write, Glob, Grep, Bash, Agent, mcp__inworld__list_voices, mcp__inworld__synthesize_speech
+allowed-tools: Read, Edit, Write, Glob, Grep, Bash, Agent, mcp__plugin_inworld_inworld__list_voices, mcp__plugin_inworld_inworld__synthesize_speech
 ---
 
 # Add Voice Skill
