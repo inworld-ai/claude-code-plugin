@@ -7,7 +7,9 @@ import { dirname, resolve } from "node:path";
 // ---------------------------------------------------------------------------
 // Constants
 // ---------------------------------------------------------------------------
-const INWORLD_API_BASE = "https://api.inworld.ai";
+// Override with INWORLD_API_BASE to target a non-prod environment
+// (e.g. an internal dev/staging endpoint). Defaults to production.
+const INWORLD_API_BASE = process.env.INWORLD_API_BASE?.replace(/\/+$/, "") || "https://api.inworld.ai";
 const VALID_ENCODINGS = [
     "MP3",
     "LINEAR16",
