@@ -7,7 +7,9 @@ import { dirname, resolve } from "node:path";
 // ---------------------------------------------------------------------------
 // Constants
 // ---------------------------------------------------------------------------
-const INWORLD_API_BASE = "https://api.inworld.ai";
+// Override with INWORLD_API_BASE to target a non-prod environment
+// (e.g. an internal dev/staging endpoint). Defaults to production.
+const INWORLD_API_BASE = process.env.INWORLD_API_BASE?.replace(/\/+$/, "") || "https://api.inworld.ai";
 const VALID_ENCODINGS = [
     "MP3",
     "LINEAR16",
@@ -96,7 +98,7 @@ function extensionForEncoding(encoding) {
 // ---------------------------------------------------------------------------
 const server = new McpServer({
     name: "inworld",
-    version: "0.6.1",
+    version: "0.6.2",
 });
 // ----- Tool: list_voices -----
 server.tool("list_voices", "List available Inworld TTS voices. Filter by language (ISO 639-1), by tags, and/or by " +
@@ -553,13 +555,16 @@ server.tool("publish_voice", "Publish a designed voice (from design_voice) to yo
     if (tags && tags.length > 0)
         body.tags = tags;
     const data = await inworldFetch(`/voices/v1/voices/${encodeURIComponent(voice_id)}:publish`, { method: "POST", body: JSON.stringify(body) });
+    // The publish endpoint returns voice fields at the top level (unlike
+    // clone, which wraps them in `voice`); accept either shape.
+    const published = data.voice ?? data;
     return {
         content: [
             {
                 type: "text",
                 text: JSON.stringify({
-                    voiceId: data.voice.voiceId,
-                    displayName: data.voice.displayName,
+                    voiceId: published.voiceId ?? voice_id,
+                    displayName: published.displayName ?? display_name,
                     status: "published",
                 }, null, 2),
             },

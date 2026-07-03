@@ -96,6 +96,16 @@ npm run build
 
 The built `build/index.js` is committed so end-users don't need a build step.
 
+### Targeting a non-prod environment
+
+The MCP server defaults to the production API (`https://api.inworld.ai`). To point it at a different environment (internal dev/staging), set `INWORLD_API_BASE` in the environment Claude Code is launched from:
+
+```sh
+export INWORLD_API_BASE="https://your-dev-endpoint.example.com"
+```
+
+Trailing slashes are stripped. When unset or empty, production is used.
+
 ## License
 
 MIT
