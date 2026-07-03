@@ -1,5 +1,6 @@
 {
   "name": "inworld",
+  "description": "Official Inworld AI plugins for Claude Code — TTS-2 (100+ languages, steering), STT, Realtime voice agents, voice cloning & design, and the LLM Router.",
   "owner": {
     "name": "Inworld AI",
     "url": "https://inworld.ai"
