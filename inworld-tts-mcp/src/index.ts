@@ -32,7 +32,7 @@ const VALID_TTS_MODELS = [
   "inworld-tts-1.5-mini",
 ] as const;
 
-const VALID_DELIVERY_MODES = ["STABLE", "BALANCED", "EXPRESSIVE"] as const;
+const VALID_DELIVERY_MODES = ["STABLE", "BALANCED", "CREATIVE"] as const;
 
 const VALID_STT_MODELS = [
   "groq/whisper-large-v3",
@@ -174,7 +174,7 @@ function extensionForEncoding(encoding: string): string {
 
 const server = new McpServer({
   name: "inworld",
-  version: "0.6.2",
+  version: "0.6.3",
 });
 
 // ----- Tool: list_voices -----
@@ -300,7 +300,7 @@ server.tool(
       .enum(VALID_DELIVERY_MODES)
       .optional()
       .describe(
-        "TTS-2 only. STABLE = most consistent, BALANCED = default, EXPRESSIVE = most variation. " +
+        "TTS-2 only. STABLE = most consistent, BALANCED = default, CREATIVE = most varied, greater emotional range. " +
           "Ignored by 1.5 models."
       ),
     timestamp_type: z

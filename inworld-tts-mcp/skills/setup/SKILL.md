@@ -69,7 +69,7 @@ export interface SynthesizeOptions {
   audioEncoding?: "MP3" | "LINEAR16" | "WAV" | "OGG_OPUS" | "FLAC";
   sampleRateHertz?: number;
   speakingRate?: number;
-  deliveryMode?: "STABLE" | "BALANCED" | "EXPRESSIVE";
+  deliveryMode?: "STABLE" | "BALANCED" | "CREATIVE";
 }
 
 export async function synthesize(opts: SynthesizeOptions): Promise<Buffer> {
