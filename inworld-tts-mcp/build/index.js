@@ -25,7 +25,7 @@ const VALID_TTS_MODELS = [
     "inworld-tts-1.5-max",
     "inworld-tts-1.5-mini",
 ];
-const VALID_DELIVERY_MODES = ["STABLE", "BALANCED", "EXPRESSIVE"];
+const VALID_DELIVERY_MODES = ["STABLE", "BALANCED", "CREATIVE"];
 const VALID_STT_MODELS = [
     "groq/whisper-large-v3",
     "inworld/inworld-stt-1",
@@ -98,7 +98,7 @@ function extensionForEncoding(encoding) {
 // ---------------------------------------------------------------------------
 const server = new McpServer({
     name: "inworld",
-    version: "0.6.2",
+    version: "0.6.3",
 });
 // ----- Tool: list_voices -----
 server.tool("list_voices", "List available Inworld TTS voices. Filter by language (ISO 639-1), by tags, and/or by " +
@@ -194,7 +194,7 @@ server.tool("synthesize_speech", "Convert text to speech using Inworld AI TTS. S
     delivery_mode: z
         .enum(VALID_DELIVERY_MODES)
         .optional()
-        .describe("TTS-2 only. STABLE = most consistent, BALANCED = default, EXPRESSIVE = most variation. " +
+        .describe("TTS-2 only. STABLE = most consistent, BALANCED = default, CREATIVE = most varied, greater emotional range. " +
         "Ignored by 1.5 models."),
     timestamp_type: z
         .enum(["WORD", "CHARACTER"])

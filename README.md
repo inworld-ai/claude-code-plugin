@@ -60,7 +60,7 @@ Realtime, streaming TTS, and streaming STT are intentionally **not** MCP tools �
 [speak slowly and with concern] are you sure you want to continue?
 ```
 
-**Delivery mode** — overall consistency: `STABLE`, `BALANCED` (default), `EXPRESSIVE`.
+**Delivery mode** — overall consistency: `STABLE`, `BALANCED` (default), `CREATIVE`.
 
 **Pauses** — SSML break tags:
 

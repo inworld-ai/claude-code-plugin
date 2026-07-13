@@ -52,7 +52,7 @@ export interface StreamingTtsOptions {
   audioEncoding?: "MP3" | "LINEAR16" | "OGG_OPUS";
   sampleRateHertz?: number;
   speakingRate?: number;
-  deliveryMode?: "STABLE" | "BALANCED" | "EXPRESSIVE";
+  deliveryMode?: "STABLE" | "BALANCED" | "CREATIVE";
   onAudioChunk?: (audio: Buffer) => void;          // raw audio bytes per chunk
   onTimestamp?: (info: unknown) => void;            // word/character timing per chunk
 }
