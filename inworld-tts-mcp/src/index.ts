@@ -1092,6 +1092,8 @@ const SEARCH_INDEXES = ["docs", "website", "resolutions", "ui-actions"] as const
 interface SearchHit {
   index: string;
   score: number;
+  /** Cross-encoder relevance in [0,1]; present only when server-side reranking ran. */
+  rerankScore?: number;
   title: string;
   section: string;
   url: string;
