@@ -700,11 +700,9 @@ server.tool("list_routers", "List the Inworld Routers configured on your account
 // ---------------------------------------------------------------------------
 // Public search endpoint over Inworld's docs/support indexes (assistant-service
 // GET /search). No auth required — it serves public content and is rate-limited
-// server-side. Base URL is separate from the main API host; override with
-// INWORLD_SEARCH_BASE if the service moves.
-// TODO(prod-url): confirm the production base URL before releasing v0.7.0.
+// server-side. Override with INWORLD_SEARCH_BASE if the service moves.
 const INWORLD_SEARCH_BASE = process.env.INWORLD_SEARCH_BASE?.replace(/\/+$/, "") ||
-    "https://assistant.inworld.ai";
+    "https://api.inworld.ai/api/v1/inworld-assistant";
 const SEARCH_INDEXES = ["docs", "website", "resolutions", "ui-actions"];
 server.tool("search_docs", "Search Inworld's documentation and support knowledge. Use this FIRST when the user hits an " +
     "error with an Inworld API, asks how to do something with Inworld, or asks about Inworld " +
