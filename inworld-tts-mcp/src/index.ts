@@ -174,7 +174,7 @@ function extensionForEncoding(encoding: string): string {
 
 const server = new McpServer({
   name: "inworld",
-  version: "0.6.3",
+  version: "0.7.0",
 });
 
 // ----- Tool: list_voices -----
@@ -1068,6 +1068,112 @@ server.tool(
         {
           type: "text" as const,
           text: JSON.stringify(routers, null, 2),
+        },
+      ],
+    };
+  }
+);
+
+// ---------------------------------------------------------------------------
+// Docs search tool
+// ---------------------------------------------------------------------------
+
+// Public search endpoint over Inworld's docs/support indexes (assistant-service
+// GET /search). No auth required — it serves public content and is rate-limited
+// server-side. Override with INWORLD_SEARCH_BASE if the service moves.
+const INWORLD_SEARCH_BASE =
+  process.env.INWORLD_SEARCH_BASE?.replace(/\/+$/, "") ||
+  "https://api.inworld.ai/api/v1/inworld-assistant";
+
+const SEARCH_INDEXES = ["docs", "website", "resolutions", "ui-actions"] as const;
+
+interface SearchHit {
+  index: string;
+  score: number;
+  /** Cross-encoder relevance in [0,1]; present only when server-side reranking ran. */
+  rerankScore?: number;
+  title: string;
+  section: string;
+  url: string;
+  snippet: string;
+}
+
+interface SearchResponse {
+  query: string;
+  indexes: string[];
+  results: SearchHit[];
+}
+
+server.tool(
+  "search_docs",
+  "Search Inworld's documentation and support knowledge. Use this FIRST when the user hits an " +
+    "error with an Inworld API, asks how to do something with Inworld, or asks about Inworld " +
+    "features/pricing/limits — before answering from memory. Indexes: 'docs' (docs portal + API " +
+    "reference, the default and most reliable), 'website' (inworld.ai marketing/product pages), " +
+    "'resolutions' (support knowledge base — early-stage corpus: treat hits scoring below ~0.65 " +
+    "as likely irrelevant and prefer docs hits when they conflict), 'ui-actions' (Studio UI " +
+    "catalog — for 'where do I click in Studio' questions). Returns ranked hits with snippets " +
+    "and source URLs (resolutions entries may lack URLs). Public endpoint; no API key required.",
+  {
+    query: z
+      .string()
+      .min(1)
+      .max(500)
+      .describe("Natural-language search query (max 500 chars)"),
+    indexes: z
+      .array(z.enum(SEARCH_INDEXES))
+      .optional()
+      .describe(
+        "Which indexes to search. Omit for docs only. For troubleshooting, use " +
+          "['docs','resolutions']. For Studio UI questions, include 'ui-actions'."
+      ),
+    top_k: z
+      .number()
+      .int()
+      .min(1)
+      .max(25)
+      .optional()
+      .describe("Max hits per index (1-25, server default 10)"),
+  },
+  async ({ query, indexes, top_k }) => {
+    const params = new URLSearchParams({ q: query });
+    if (indexes && indexes.length > 0) params.set("indexes", indexes.join(","));
+    if (top_k !== undefined) params.set("topK", String(top_k));
+
+    const url = `${INWORLD_SEARCH_BASE}/search?${params.toString()}`;
+    const res = await fetch(url);
+
+    if (res.status === 429) {
+      throw new Error(
+        "Inworld search is rate-limited right now — wait a few seconds and retry."
+      );
+    }
+    if (!res.ok) {
+      let msg = `Inworld search error: ${res.status} ${res.statusText}`;
+      try {
+        const body = (await res.json()) as { message?: string };
+        if (body.message) msg += ` — ${body.message}`;
+      } catch {
+        // ignore parse errors
+      }
+      throw new Error(msg);
+    }
+
+    const data = (await res.json()) as SearchResponse;
+    return {
+      content: [
+        {
+          type: "text" as const,
+          text: JSON.stringify(
+            {
+              query: data.query,
+              indexes: data.indexes,
+              count: data.results.length,
+              results: data.results,
+            },
+            null,
+            2
+          ),
         },
       ],
     };

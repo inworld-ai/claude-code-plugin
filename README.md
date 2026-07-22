@@ -30,10 +30,11 @@ Claude Code will prompt for your Inworld API key. Get one at [platform.inworld.a
 | `/inworld:add-realtime [browser\|server\|twilio]` | Scaffolds a working Realtime client — WebSocket for server / Twilio, WebRTC for browser. Includes backend token minting, mic capture, audio playback, `session.update` wiring. Includes an OpenAI Realtime migration cheat sheet if you're already on that. |
 | `/inworld:add-streaming-tts [http\|websocket]` | Scaffolds a streaming TTS client for sub-200ms time-to-first-audio. Chunked HTTP for simplicity, WebSocket for cancellation + barge-in support. |
 | `/inworld:add-streaming-stt [browser\|server]` | Scaffolds a live mic → transcript streaming STT client. For captions, dictation, voice notes, meeting transcription, voice commands. Browser uses AudioWorklet; server uses SoX. |
+| `/inworld:troubleshoot [error or problem]` | Diagnoses Inworld API errors and how-do-I questions using Inworld's official docs and support knowledge base (via `search_docs`), checks known sharp edges, reproduces with the MCP tools, and only then escalates to support — with a well-formed report. |
 
 ## MCP tools
 
-The plugin's MCP server exposes 9 tools that Claude can call directly:
+The plugin's MCP server exposes 10 tools that Claude can call directly:
 
 | Tool | What it does |
 |---|---|
@@ -46,6 +47,7 @@ The plugin's MCP server exposes 9 tools that Claude can call directly:
 | `chat_completion` | OpenAI-compatible call to any provider model (`openai/gpt-4o-mini`, `anthropic/claude-3-5-sonnet`, etc.) or to an Inworld Router (`inworld/<name>`). |
 | `chat_completion_with_audio` | LLM + TTS in one call — chat reply returned as audio plus transcript. Faster than chat → synth because TTS pipelines while the LLM is still generating. |
 | `list_routers` | List your configured Inworld Routers. |
+| `search_docs` | AI search over Inworld's official knowledge: `docs` (docs portal + API reference), `website` (inworld.ai), `resolutions` (support knowledge base), `ui-actions` (Studio UI catalog). Public endpoint, no API key needed. |
 
 Realtime, streaming TTS, and streaming STT are intentionally **not** MCP tools — bidirectional streaming audio belongs in your app, not in Claude's MCP transport. The corresponding skills write that code into your project.
 
