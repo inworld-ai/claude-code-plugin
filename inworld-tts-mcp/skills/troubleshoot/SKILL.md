@@ -29,13 +29,19 @@ the request shape, not the service.
 
 Call `search_docs` before reasoning from memory. Two searches usually suffice:
 
-1. The error, verbatim, against support knowledge:
-   `search_docs(query: "<error message>", indexes: ["resolutions", "docs"])`
+1. The error, verbatim, against docs + support knowledge:
+   `search_docs(query: "<error message>", indexes: ["docs", "resolutions"])`
 2. The task the user was attempting, against docs:
    `search_docs(query: "how to <what they were doing>", indexes: ["docs"])`
 
 For "where do I find X in Studio / the portal" questions, add `"ui-actions"`.
 Cite the returned URLs in your answer so the user can read the source.
+
+**Weigh hits by score and index.** The `docs` index is authoritative. The
+`resolutions` KB is early-stage: hits scoring below ~0.65 are usually
+term-overlap noise, not answers — discard them rather than stretching to make
+them fit, and never cite a resolutions hit that doesn't directly address the
+user's actual problem.
 
 ## Step 3 — Check the known sharp edges
 

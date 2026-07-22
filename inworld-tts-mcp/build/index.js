@@ -707,10 +707,11 @@ const SEARCH_INDEXES = ["docs", "website", "resolutions", "ui-actions"];
 server.tool("search_docs", "Search Inworld's documentation and support knowledge. Use this FIRST when the user hits an " +
     "error with an Inworld API, asks how to do something with Inworld, or asks about Inworld " +
     "features/pricing/limits — before answering from memory. Indexes: 'docs' (docs portal + API " +
-    "reference, the default), 'website' (inworld.ai marketing/product pages), 'resolutions' " +
-    "(support knowledge base — best for troubleshooting errors), 'ui-actions' (Studio UI " +
-    "catalog — best for 'where do I click in Studio' questions). Returns ranked hits with " +
-    "snippets and source URLs. Public endpoint; no API key required.", {
+    "reference, the default and most reliable), 'website' (inworld.ai marketing/product pages), " +
+    "'resolutions' (support knowledge base — early-stage corpus: treat hits scoring below ~0.65 " +
+    "as likely irrelevant and prefer docs hits when they conflict), 'ui-actions' (Studio UI " +
+    "catalog — for 'where do I click in Studio' questions). Returns ranked hits with snippets " +
+    "and source URLs (resolutions entries may lack URLs). Public endpoint; no API key required.", {
     query: z
         .string()
         .min(1)
