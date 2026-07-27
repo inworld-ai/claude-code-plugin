@@ -283,6 +283,8 @@ server.tool(
       ),
     model_id: z
       .string()
+      .trim()
+      .min(1)
       .default("inworld-tts-2")
       .describe(
         "TTS model. Known models: inworld-tts-2 (default; 100+ languages, steering), " +
@@ -440,6 +442,8 @@ server.tool(
       .describe("Path to the audio file to transcribe (MP3, WAV, FLAC, OGG, or raw PCM)"),
     model_id: z
       .string()
+      .trim()
+      .min(1)
       .default("groq/whisper-large-v3")
       .describe(
         "STT model. Known models: 'groq/whisper-large-v3' (100+ languages), " +
@@ -972,9 +976,13 @@ server.tool(
       .describe("TTS voice id (e.g. 'Ashley', 'Dennis'). Use list_voices to browse."),
     tts_model: z
       .string()
+      .trim()
+      .min(1)
       .default("inworld-tts-2")
       .describe(
-        "TTS model. Default inworld-tts-2; any current Inworld TTS model id is accepted."
+        "TTS model. Known models: inworld-tts-2 (default; 100+ languages, steering), " +
+          "inworld-tts-1.5-max (<200ms, 15 languages), inworld-tts-1.5-mini (~120ms). " +
+          "Any newer model Inworld releases is accepted too — pass its id through."
       ),
     output_file: z
       .string()

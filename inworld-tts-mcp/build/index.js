@@ -182,6 +182,8 @@ server.tool("synthesize_speech", "Convert text to speech using Inworld AI TTS. S
         .describe("Path to save the audio file. Extension is appended from encoding if missing."),
     model_id: z
         .string()
+        .trim()
+        .min(1)
         .default("inworld-tts-2")
         .describe("TTS model. Known models: inworld-tts-2 (default; 100+ languages, steering), " +
         "inworld-tts-1.5-max (<200ms, 15 languages), inworld-tts-1.5-mini (~120ms). " +
@@ -275,6 +277,8 @@ server.tool("transcribe_audio", "Transcribe speech from an audio file using Inwo
         .describe("Path to the audio file to transcribe (MP3, WAV, FLAC, OGG, or raw PCM)"),
     model_id: z
         .string()
+        .trim()
+        .min(1)
         .default("groq/whisper-large-v3")
         .describe("STT model. Known models: 'groq/whisper-large-v3' (100+ languages), " +
         "'inworld/inworld-stt-1' (English-only, includes voice profile analysis). " +
@@ -631,8 +635,12 @@ server.tool("chat_completion_with_audio", "LLM + TTS in a single call: returns t
         .describe("TTS voice id (e.g. 'Ashley', 'Dennis'). Use list_voices to browse."),
     tts_model: z
         .string()
+        .trim()
+        .min(1)
         .default("inworld-tts-2")
-        .describe("TTS model. Default inworld-tts-2; any current Inworld TTS model id is accepted."),
+        .describe("TTS model. Known models: inworld-tts-2 (default; 100+ languages, steering), " +
+        "inworld-tts-1.5-max (<200ms, 15 languages), inworld-tts-1.5-mini (~120ms). " +
+        "Any newer model Inworld releases is accepted too — pass its id through."),
     output_file: z
         .string()
         .describe("Path to write the resulting PCM16 audio file (e.g. 'reply.wav')"),
