@@ -1,6 +1,6 @@
 {
   "name": "inworld-tts-mcp",
-  "version": "0.7.1",
+  "version": "0.7.2",
   "description": "MCP server for Inworld AI (TTS-2, STT, Realtime, Router, voice cloning, voice design, LLM+TTS) packaged as a Claude Code plugin.",
   "type": "module",
   "bin": {

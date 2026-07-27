@@ -20,16 +20,11 @@ const VALID_ENCODINGS = [
     "ALAW",
     "MULAW",
 ];
-const VALID_TTS_MODELS = [
-    "inworld-tts-2",
-    "inworld-tts-1.5-max",
-    "inworld-tts-1.5-mini",
-];
+// Model ids are NOT validated as enums — they're passed through as strings so
+// new Inworld models work the day they ship, without a plugin update. Known
+// models are listed in each tool's description for guidance. delivery_mode and
+// the audio encodings below stay enums: small, stable, closed sets.
 const VALID_DELIVERY_MODES = ["STABLE", "BALANCED", "CREATIVE"];
-const VALID_STT_MODELS = [
-    "groq/whisper-large-v3",
-    "inworld/inworld-stt-1",
-];
 const VALID_STT_ENCODINGS = [
     "MP3",
     "LINEAR16",
@@ -98,7 +93,7 @@ function extensionForEncoding(encoding) {
 // ---------------------------------------------------------------------------
 const server = new McpServer({
     name: "inworld",
-    version: "0.7.1",
+    version: "0.7.2",
 });
 // ----- Tool: list_voices -----
 server.tool("list_voices", "List available Inworld TTS voices. Filter by language (ISO 639-1), by tags, and/or by " +
@@ -186,11 +181,12 @@ server.tool("synthesize_speech", "Convert text to speech using Inworld AI TTS. S
         .string()
         .describe("Path to save the audio file. Extension is appended from encoding if missing."),
     model_id: z
-        .enum(VALID_TTS_MODELS)
+        .string()
         .default("inworld-tts-2")
-        .describe("TTS model. inworld-tts-2 (default, research preview) supports 100+ languages and steering. " +
-        "inworld-tts-1.5-max has <200ms latency across 15 languages. " +
-        "inworld-tts-1.5-mini is ultra-fast (~120ms)."),
+        .describe("TTS model. Known models: inworld-tts-2 (default; 100+ languages, steering), " +
+        "inworld-tts-1.5-max (<200ms, 15 languages), inworld-tts-1.5-mini (~120ms). " +
+        "Any newer model Inworld releases is accepted too — pass its id through. " +
+        "Use search_docs('TTS models') to check the current lineup."),
     delivery_mode: z
         .enum(VALID_DELIVERY_MODES)
         .optional()
@@ -278,10 +274,11 @@ server.tool("transcribe_audio", "Transcribe speech from an audio file using Inwo
         .string()
         .describe("Path to the audio file to transcribe (MP3, WAV, FLAC, OGG, or raw PCM)"),
     model_id: z
-        .enum(VALID_STT_MODELS)
+        .string()
         .default("groq/whisper-large-v3")
-        .describe("STT model to use. 'groq/whisper-large-v3' supports 100+ languages. " +
-        "'inworld/inworld-stt-1' is English-only but includes voice profile analysis."),
+        .describe("STT model. Known models: 'groq/whisper-large-v3' (100+ languages), " +
+        "'inworld/inworld-stt-1' (English-only, includes voice profile analysis). " +
+        "Any newer model Inworld releases is accepted too — pass its id through."),
     audio_encoding: z
         .enum(VALID_STT_ENCODINGS)
         .default("AUTO_DETECT")
@@ -633,9 +630,9 @@ server.tool("chat_completion_with_audio", "LLM + TTS in a single call: returns t
         .string()
         .describe("TTS voice id (e.g. 'Ashley', 'Dennis'). Use list_voices to browse."),
     tts_model: z
-        .enum(VALID_TTS_MODELS)
+        .string()
         .default("inworld-tts-2")
-        .describe("TTS model. Default inworld-tts-2."),
+        .describe("TTS model. Default inworld-tts-2; any current Inworld TTS model id is accepted."),
     output_file: z
         .string()
         .describe("Path to write the resulting PCM16 audio file (e.g. 'reply.wav')"),
