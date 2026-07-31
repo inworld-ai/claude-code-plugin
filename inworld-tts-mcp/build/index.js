@@ -62880,15 +62880,19 @@ var init_studio_config = __esm({
 });
 
 // src/mcp/inworld/studio-api.ts
-async function requireApiKey() {
+async function readApiKey() {
   const fromEnv = process.env.INWORLD_API_KEY?.trim();
   if (fromEnv) return fromEnv;
   try {
     const creds = await readStoredCredentials();
-    const k = creds?.apiKey?.trim();
-    if (k) return k;
+    return creds?.apiKey?.trim() || void 0;
   } catch {
+    return void 0;
   }
+}
+async function requireApiKey() {
+  const key = await readApiKey();
+  if (key) return key;
   throw new Error(
     "No Inworld API key available. Set INWORLD_API_KEY in the environment, or run `inworld workspace select-key` from a terminal to bind one to the local credential store (shared with this MCP server)."
   );
@@ -63316,13 +63320,7 @@ function runtimeSearchBase() {
   return `${runtimeApiBase()}/api/v1/inworld-assistant`;
 }
 async function hasApiKeyCredential() {
-  if (process.env.INWORLD_API_KEY?.trim()) return true;
-  try {
-    const creds = await readStoredCredentials();
-    return Boolean(creds?.apiKey?.trim());
-  } catch {
-    return false;
-  }
+  return Boolean(await readApiKey());
 }
 async function runtimeFetch(path7, options = {}) {
   const apiKey = await requireApiKey();
@@ -63349,7 +63347,6 @@ async function runtimeFetch(path7, options = {}) {
 var init_api2 = __esm({
   "src/mcp/runtime/api.ts"() {
     "use strict";
-    init_dist4();
     init_studio_config();
     init_studio_api();
   }
@@ -63945,10 +63942,18 @@ function registerRuntimeTools(server) {
           params.set("indexes", indexes.join(","));
         if (top_k !== void 0) params.set("topK", String(top_k));
         const url = `${runtimeSearchBase()}/search?${params.toString()}`;
-        const res = await fetch(url);
+        const apiKey = await readApiKey();
+        const res = await fetch(url, {
+          headers: apiKey ? { Authorization: `Basic ${apiKey}` } : {}
+        });
         if (res.status === 429) {
           throw new Error(
             "Inworld search is rate-limited right now \u2014 wait a few seconds and retry."
+          );
+        }
+        if (res.status === 401 || res.status === 403) {
+          throw new Error(
+            apiKey ? "Inworld search rejected the API key. Check INWORLD_API_KEY, or re-bind one with `inworld workspace select-key`." : "Inworld search requires an API key. Set INWORLD_API_KEY in the environment, or run `inworld workspace select-key` from a terminal."
           );
         }
         if (!res.ok) {
@@ -63978,6 +63983,7 @@ var init_register = __esm({
   "src/mcp/runtime/register.ts"() {
     "use strict";
     init_zod();
+    init_studio_api();
     init_api2();
     VALID_ENCODINGS = [
       "MP3",
