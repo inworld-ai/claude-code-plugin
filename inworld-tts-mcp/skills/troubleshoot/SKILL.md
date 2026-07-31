@@ -37,6 +37,14 @@ Call `search_docs` before reasoning from memory. Two searches usually suffice:
 For "where do I find X in Studio / the portal" questions, add `"ui-actions"`.
 Cite the returned URLs in your answer so the user can read the source.
 
+**If `search_docs` fails, do not silently fall back to memory.** Search is rate
+limited per client, so back-to-back calls can return a rate-limit error; it can
+also fail on auth or a transient 5xx. Wait a few seconds and retry once. If it
+still fails, go on to Step 3 — but say plainly in your answer that official
+knowledge was unreachable and the diagnosis rests on local checks alone. This
+skill's value is that it is grounded in Inworld's own docs; an ungrounded answer
+that reads like a grounded one is worse than admitting the gap.
+
 **Weigh hits by score and index.** The `docs` index is authoritative. The
 `resolutions` KB is early-stage: hits scoring below ~0.65 are usually
 term-overlap noise, not answers — discard them rather than stretching to make
