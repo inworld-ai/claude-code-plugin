@@ -59,7 +59,10 @@ const timeout = setTimeout(() => {
 
 proc.stdout.on("data", (chunk) => {
   buffer += chunk.toString("utf8");
-  for (const line of buffer.split("\n")) {
+  const lines = buffer.split("\n");
+  // Last element is a partial line until its newline arrives in a later chunk.
+  buffer = lines.pop() ?? "";
+  for (const line of lines) {
     if (!line.trim()) continue;
     let msg;
     try {
