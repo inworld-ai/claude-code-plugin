@@ -90,13 +90,18 @@ STT streaming additionally supports `assemblyai/universal-streaming-multilingual
 
 ## Local development
 
+The MCP server is **vendored from [`@inworld/cli`](https://github.com/inworld-ai/inworld-cli)** (its in-tree `packages/cli/src/mcp/` server, built as the `inworld-mcp` bin) — this repo has no server source of its own. The plugin pins the exact 10-tool surface via `INWORLD_MCP_TOOLSET=runtime` in `.mcp.json`, and the tool names + input schemas are locked by the CLI's `tests/mcp/runtime-tools.test.ts` contract test.
+
+To change server behavior, change it in the CLI repo, then re-vendor:
+
 ```
 cd inworld-tts-mcp
-npm install
-npm run build
+./scripts/vendor.sh          # pinned npm version (see CLI_VERSION in the script)
+./scripts/vendor.sh 1.3.0    # specific npm version
+./scripts/vendor.sh ~/code/inworld-cli   # local CLI checkout (must be built)
 ```
 
-The built `build/index.js` is committed so end-users don't need a build step.
+The script copies the artifact into `build/index.js` and runs `scripts/smoke.mjs`, which boots it standalone and asserts the 10-tool contract. The vendored `build/index.js` is committed so end-users don't need a build step.
 
 ### Targeting a non-prod environment
 

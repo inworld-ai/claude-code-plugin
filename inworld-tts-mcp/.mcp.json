@@ -4,7 +4,8 @@
       "command": "node",
       "args": ["${CLAUDE_PLUGIN_ROOT}/build/index.js"],
       "env": {
-        "INWORLD_API_KEY": "${user_config.api_key}"
+        "INWORLD_API_KEY": "${user_config.api_key}",
+        "INWORLD_MCP_TOOLSET": "runtime"
       }
     }
   }
