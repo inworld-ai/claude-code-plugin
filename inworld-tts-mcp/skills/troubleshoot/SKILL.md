@@ -77,7 +77,9 @@ Fast local checks that resolve a large share of issues:
 - **Designed voices disappearing**: design previews expire quickly; they must
   be published (`publish_voice`) to persist. Cloned voices persist automatically.
 - **STT empty transcript**: streaming STT requires LINEAR16 PCM, 16 kHz mono;
-  batch accepts MP3/WAV/FLAC/OGG with `AUTO_DETECT`.
+  batch accepts MP3/WAV/FLAC/OGG with `AUTO_DETECT`. Use Inworld's model,
+  `inworld/inworld-stt-1` (30 languages); when reproducing with
+  `transcribe_audio`, pass `model_id: "inworld/inworld-stt-1"` explicitly.
 - **TTS text limit**: 2,000 chars per synthesize call — split longer text at
   sentence boundaries.
 - **429s**: per-IP rate limiting — back off a few seconds; don't hammer.

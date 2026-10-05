@@ -31,24 +31,18 @@ From $ARGUMENTS or by asking:
 | `browser` | Web app — live captions, dictation, in-browser voice notes | Web Audio API + MediaRecorder/AudioWorklet |
 | `server`  | Node/Python backend, desktop CLI, Twilio, Discord bot | SoX, `node-record-lpcm16`, or any PCM source |
 
-**Auth note:** Browser clients must NOT ship the raw Inworld API key. Mint a
-short-lived bearer token on your backend (see [add-realtime](../add-realtime/SKILL.md)
-Step 3 for the token-mint pattern — same flow applies here). For `server`
+**Auth note:** Browser clients must NOT ship the raw Inworld API key. Your
+backend mints a single-use **one-time token** per connection (Step 4) and the
+browser passes it in the `bearer_` WebSocket subprotocol. For `server`
 transport, use the Basic API key directly.
 
 ## Step 2 — Pick a model
 
-Ask the user, or default to `inworld/inworld-stt-1`. The streaming endpoint
-supports these models (LINEAR16 PCM only):
-
-| Model | Best for |
-|---|---|
-| `inworld/inworld-stt-1` | Default. Multi-language, in-house. |
-| `assemblyai/universal-streaming-multilingual` | 100+ languages, AssemblyAI's flagship. |
-| `assemblyai/universal-streaming-english` | English-only, lower latency. |
-| `assemblyai/u3-rt-pro` | AssemblyAI realtime-pro. |
-| `assemblyai/whisper-rt` | Whisper-quality, realtime latency. |
-| `soniox/stt-rt-v4` | Soniox v4. |
+Use `inworld/inworld-stt-1`, Inworld's own STT model: 30 languages, optional
+Voice Profile (age, emotion, pitch, vocal style, accent), and configurable
+turn-taking. The streaming endpoint accepts LINEAR16 PCM only. If the user knows
+the spoken language, pass it as `language` — a hint improves accuracy,
+especially on short utterances.
 
 ## Step 3 — Scaffold the Node / server client
 
@@ -162,14 +156,40 @@ process.on("SIGINT", () => { sox.kill("SIGTERM"); stt.endTurn(); });
 
 ## Step 4 — Scaffold the browser client
 
-Two pieces: a backend token-mint endpoint (reuse the pattern from the
-`add-realtime` skill, Step 3) and a browser module.
+Two pieces: a backend endpoint that mints a one-time token, and a browser module.
+
+`src/server/inworld-token.ts` — mount at `POST /api/inworld-token`. `user` must
+come from your existing auth middleware; apply your app's CSRF protection and a
+per-user rate limit before calling it:
+
+```ts
+// Mints a single-use, short-lived token so the browser never sees the API key.
+// Docs: https://docs.inworld.ai/portal/ephemeral-tokens
+export async function issueInworldToken(user: { id: string } | null) {
+  if (!user) return { status: 401 as const };
+  const apiKey = process.env.INWORLD_API_KEY;
+  if (!apiKey) throw new Error("INWORLD_API_KEY is not set");
+  const upstream = await fetch("https://api.inworld.ai/auth/v1/tokens", {
+    method: "POST",
+    headers: { Authorization: `Basic ${apiKey}`, "Content-Type": "application/json" },
+    body: JSON.stringify({ single_use: true, ttl: "300s", client_reference_id: user.id }),
+    signal: AbortSignal.timeout(10_000),
+  });
+  if (!upstream.ok) return { status: upstream.status === 429 ? (429 as const) : (502 as const) };
+  const { accessToken, expireTime } = await upstream.json();
+  // Respond with Cache-Control: no-store. Never log the token.
+  return { status: 200 as const, body: { accessToken, expireTime } };
+}
+```
+
+Each token authenticates exactly one connection. Mint a fresh one for every
+connect, retry, and reconnect. Minting is rate-limited to 60 per minute per API key.
 
 `src/streaming-stt/browser-client.ts`:
 
 ```ts
 export interface BrowserSttOptions {
-  tokenEndpoint: string;           // your backend route that returns { token }
+  tokenEndpoint: string;           // your backend route that returns { accessToken }
   modelId?: string;
   language?: string;
   onInterim?: (text: string) => void;
@@ -177,13 +197,20 @@ export interface BrowserSttOptions {
 }
 
 export async function startStreamingStt(opts: BrowserSttOptions) {
-  const { token } = await fetch(opts.tokenEndpoint, { method: "POST" }).then((r) => r.json());
+  const tokenRes = await fetch(opts.tokenEndpoint, {
+    method: "POST",
+    credentials: "same-origin",
+    cache: "no-store",
+  });
+  if (!tokenRes.ok) throw new Error(`Token request failed (${tokenRes.status})`);
+  const { accessToken } = await tokenRes.json();
 
+  // Browsers can't set an Authorization header on a WebSocket, so the one-time
+  // token goes in the `bearer_` subprotocol. Never put it in the URL.
   const ws = new WebSocket(
-    `wss://api.inworld.ai/stt/v1/transcribe:streamBidirectional`,
-    // Browser WebSocket can't set Authorization header directly — see note below.
+    "wss://api.inworld.ai/stt/v1/transcribe:streamBidirectional",
+    ["bearer_" + accessToken],
   );
-  // See workaround note below for browser auth.
 
   const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
   const ctx = new AudioContext({ sampleRate: 16000 });
@@ -250,18 +277,10 @@ export async function startStreamingStt(opts: BrowserSttOptions) {
 }
 ```
 
-**Browser auth note:** the browser WebSocket API does not support custom headers.
-Two options, depending on the user's backend:
-
-1. **Proxy through your backend.** Open the WS connection to your own server,
-   which proxies to Inworld with the Basic API key. Simpler, but adds a hop.
-2. **Mint a bearer token your server signs**, then pass it via the
-   `Sec-WebSocket-Protocol` subprotocol header (the browser allows that as the
-   second WebSocket constructor argument). Confirm with Inworld whether the STT
-   streaming endpoint accepts subprotocol-based auth — the Realtime endpoint
-   does; STT may require the proxy approach.
-
-Default to the proxy when unsure. Mention this tradeoff to the user.
+**Alternative:** if the app already relays audio through its own backend
+WebSocket, the backend can connect to Inworld with the Basic API key instead and
+skip the token endpoint. A failed handshake never produces a transcript, so
+surface `ws.onerror` / `ws.onclose` to the caller instead of waiting forever.
 
 ## Step 5 — Hook into the UI
 
@@ -286,5 +305,5 @@ If nothing comes back:
 - Check the WS connection actually opened (status code, browser console).
 - Confirm audio chunks are being sent (log chunk size). 0 bytes = mic permission denied or audio context suspended.
 - Verify sample rate is 16 kHz mono PCM16 — every other format will be rejected.
-- For AssemblyAI models, some users have reported intermittent failures; if so,
-  fall back to `inworld/inworld-stt-1`.
+- Auth failures in the browser: confirm the token endpoint returned 200 and that
+  each connection uses a freshly minted token (a used token is rejected).

@@ -103,7 +103,7 @@ export async function transcribe(audio: Buffer, opts?: { language?: string }): P
     headers: authHeaders(),
     body: JSON.stringify({
       transcribeConfig: {
-        modelId: "groq/whisper-large-v3",
+        modelId: "inworld/inworld-stt-1",
         audioEncoding: "AUTO_DETECT",
         sampleRateHertz: 16000,
         numberOfChannels: 1,
@@ -164,7 +164,7 @@ def synthesize(
 
 def transcribe(audio: bytes, *, language: str | None = None) -> str:
     cfg: dict = {
-        "modelId": "groq/whisper-large-v3",
+        "modelId": "inworld/inworld-stt-1",
         "audioEncoding": "AUTO_DETECT",
         "sampleRateHertz": 16000,
         "numberOfChannels": 1,

@@ -1,13 +1,14 @@
 # Inworld AI — Claude Code Plugin
 
-Comprehensive Inworld integration for any project, wired up by Claude Code in seconds.
+Official Inworld AI plugin for Claude Code: the top-rated TTS-2 model with natural-language steering across 200+ languages, hundreds of professional voices plus instant voice cloning and design, STT with voice profiling, Realtime voice agents, and the LLM Router. Claude Code wires it into any project in seconds.
 
-- **TTS-2** — 100+ languages, natural-language steering (`[whisper]`, `[say with rising excitement]`, `[laugh]`), `delivery_mode`, word & character timestamps
-- **Streaming TTS** — sub-200ms time-to-first-audio via chunked HTTP or WebSocket
-- **STT (batch)** — multi-provider transcription (Whisper, Inworld STT-1) with optional voice profile (age/gender/accent/emotion)
+- **TTS-2** — 200+ languages and locales, natural-language steering (`[whisper]`, `[say with rising excitement]`, `[laugh]`), `delivery_mode`, word & character timestamps
+- **TTS-2 Flash** — Inworld's fastest, lowest-cost model: ~20 ms time to first audio, same languages as TTS-2
+- **Streaming TTS** — audio starts playing while it's still being generated, via chunked HTTP or WebSocket (~100 ms server-side time to first audio with TTS-2)
+- **STT (batch)** — Inworld STT-1 transcription in 30 languages, with optional Voice Profile (age, emotion, pitch, vocal style, accent)
 - **STT (streaming)** — live mic → transcript over WebSocket, interim + final results
 - **Realtime voice agents** — bidirectional speech-to-speech over WebSocket / WebRTC / Twilio, with optional Router-backed LLM
-- **Voice cloning** — create a custom voice from as little as 5 seconds of audio
+- **Voice cloning** — create a custom voice from as little as 3 seconds of audio
 - **Voice design** — generate voices from a text description (no audio sample required)
 - **LLM Router** — OpenAI-compatible chat completions with traffic-split routing, fallback, and A/B testing
 - **LLM + TTS combined** — one call: chat completion that returns audio directly
@@ -40,7 +41,7 @@ The plugin's MCP server exposes 10 tools that Claude can call directly:
 |---|---|
 | `list_voices` | Browse Inworld voices. Filters: `language`, `description_match` (keyword search of the voice description, e.g. `['warm']` — the reliable filter), `tags` (server-side tags, often empty today), `custom_only`. |
 | `synthesize_speech` | TTS-2 by default; `inworld-tts-2-flash` for lowest latency. Inline steering, `delivery_mode`, `WORD` or `CHARACTER` timestamps. |
-| `transcribe_audio` | Batch STT (file → text). Optional voice profile (age, gender, accent, emotion). |
+| `transcribe_audio` | Batch STT (file → text) with Inworld STT-1 (`model_id: inworld/inworld-stt-1`). Optional Voice Profile (age, emotion, pitch, vocal style, accent). |
 | `clone_voice` | Clone a voice from one or more audio samples. Returns a new `voiceId`. |
 | `design_voice` | Generate up to 3 preview voices from a text description. |
 | `publish_voice` | Persist a designed voice to your library after picking the preview you like. |
@@ -82,12 +83,12 @@ Visit <phoneme alphabet="ipa" ph="ˈnaɪkiː">Nike</phoneme>'s site.
 
 | Model | Languages | Latency | Best for |
 |---|---|---|---|
-| `inworld-tts-2` (default) | 100+ | ~100 ms TTFB | Quality, steering, multilingual |
-| `inworld-tts-2-flash` | 100+ (same as TTS-2) | ~20 ms TTFB | Lowest latency and cost; no steering instructions (non-verbal tags like `[laugh]` still work) |
-| `inworld-tts-1.5-max` | 15 | <200 ms | Latency + quality balance |
-| `inworld-tts-1.5-mini` | 15 | ~120 ms | Lowest latency |
+| `inworld-tts-2` (default) | 200+ | ~100 ms TTFB | Quality, steering, multilingual |
+| `inworld-tts-2-flash` | 200+ (same as TTS-2) | ~20 ms TTFB | Lowest latency and cost; no steering instructions (non-verbal tags like `[laugh]` still work) |
+| `inworld-tts-1.5-max` | 15 | <200 ms | Legacy; still accepted |
+| `inworld-tts-1.5-mini` | 15 | ~120 ms | Legacy; still accepted |
 
-STT streaming additionally supports `assemblyai/universal-streaming-multilingual`, `assemblyai/universal-streaming-english`, `assemblyai/u3-rt-pro`, `assemblyai/whisper-rt`, `soniox/stt-rt-v4`.
+STT (batch and streaming) uses `inworld/inworld-stt-1`: 30 languages, Voice Profile, and configurable turn-taking for streaming.
 
 ## Local development
 

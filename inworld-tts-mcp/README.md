@@ -2,8 +2,8 @@
 
 Add Inworld's voice and language APIs to any project from inside Claude Code. The plugin gives Claude ten MCP tools for working with Inworld directly, plus six skills that write working integration code into your project:
 
-- **TTS-2**: 100+ languages and natural-language steering (`[whisper]`, `[say with rising excitement]`), plus **TTS-2 Flash** for the lowest latency
-- **Speech-to-text**: batch and streaming, with optional voice profiling (age, emotion, accent)
+- **TTS-2**: 200+ languages and natural-language steering (`[whisper]`, `[say with rising excitement]`), plus **TTS-2 Flash** for the lowest latency
+- **Speech-to-text**: Inworld STT-1, batch and streaming, 30 languages, with optional voice profiling (age, emotion, pitch, vocal style, accent)
 - **Voices**: instant voice cloning and voice design
 - **Realtime voice agents**
 - **The Inworld LLM Router**
@@ -11,7 +11,7 @@ Add Inworld's voice and language APIs to any project from inside Claude Code. Th
 ## Requirements
 
 - An Inworld account and API key from [platform.inworld.ai/api-keys](https://platform.inworld.ai/api-keys). Claude Code prompts for the key when you enable the plugin and stores it as a sensitive value.
-- Node.js 18 or later on your `PATH`. The MCP server runs locally with `node`.
+- Node.js 20 or later on your `PATH`. The MCP server runs locally with `node`.
 
 ## Install
 
