@@ -180,8 +180,11 @@ per-user rate limit before calling it:
 ```ts
 // Mints a single-use, short-lived token so the browser never sees the API key.
 // Docs: https://docs.inworld.ai/portal/ephemeral-tokens
+// Your route sends back { status, headers, body } as-is.
+const NO_STORE = { "Cache-Control": "no-store" } as const;
+
 export async function issueInworldToken(user: { id: string } | null) {
-  if (!user) return { status: 401 as const };
+  if (!user) return { status: 401 as const, headers: NO_STORE };
   const apiKey = process.env.INWORLD_API_KEY;
   if (!apiKey) throw new Error("INWORLD_API_KEY is not set");
   const upstream = await fetch("https://api.inworld.ai/auth/v1/tokens", {
@@ -190,10 +193,12 @@ export async function issueInworldToken(user: { id: string } | null) {
     body: JSON.stringify({ single_use: true, ttl: "300s", client_reference_id: user.id }),
     signal: AbortSignal.timeout(10_000),
   });
-  if (!upstream.ok) return { status: upstream.status === 429 ? (429 as const) : (502 as const) };
+  if (!upstream.ok) {
+    return { status: upstream.status === 429 ? (429 as const) : (502 as const), headers: NO_STORE };
+  }
   const { accessToken, expireTime } = await upstream.json();
-  // Respond with Cache-Control: no-store. Never log the token.
-  return { status: 200 as const, body: { accessToken, expireTime } };
+  // The token is a bearer credential: no-store keeps it out of caches. Never log it.
+  return { status: 200 as const, headers: NO_STORE, body: { accessToken, expireTime } };
 }
 ```
 
@@ -209,6 +214,8 @@ export interface BrowserSttOptions {
   language?: string;
   onInterim?: (text: string) => void;
   onFinal?: (text: string) => void;
+  onError?: (err: Error) => void;               // handshake rejected or connection failed
+  onClose?: (code: number, reason: string) => void;
 }
 
 export async function startStreamingStt(opts: BrowserSttOptions) {
@@ -226,6 +233,9 @@ export async function startStreamingStt(opts: BrowserSttOptions) {
     "wss://api.inworld.ai/stt/v1/transcribe:streamBidirectional",
     ["bearer_" + accessToken],
   );
+  // A rejected handshake never yields a transcript, so report failures to the caller.
+  ws.onerror = () => opts.onError?.(new Error("Inworld STT connection failed"));
+  ws.onclose = (e) => opts.onClose?.(e.code, e.reason);
 
   const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
   const ctx = new AudioContext({ sampleRate: 16000 });
