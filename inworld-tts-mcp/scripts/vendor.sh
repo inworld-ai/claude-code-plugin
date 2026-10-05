@@ -9,11 +9,11 @@
 #
 # Usage:
 #   scripts/vendor.sh                 # vendor CLI_VERSION (pinned below) from npm
-#   scripts/vendor.sh 1.3.0           # vendor a specific version from npm
+#   scripts/vendor.sh 1.3.1           # vendor a specific version from npm
 #   scripts/vendor.sh /path/to/inworld-cli   # vendor from a local checkout's build
 set -euo pipefail
 
-CLI_VERSION="1.2.0"
+CLI_VERSION="1.3.1"
 
 cd "$(dirname "$0")/.."
 

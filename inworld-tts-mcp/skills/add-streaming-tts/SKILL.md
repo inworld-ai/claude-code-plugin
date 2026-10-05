@@ -34,7 +34,9 @@ Default to `http` unless the user mentions cancellation, barge-in, or sub-100ms 
 
 Ask the user, or call `list_voices` and suggest 3–5. Defaults to use:
 - `voice_id`: any from list_voices (e.g. `Ashley`)
-- `model_id`: `inworld-tts-2` for quality and steering, or `inworld-tts-1.5-mini` for ~120ms latency
+- `model_id`: `inworld-tts-2` (default) for quality and steering (~100ms server-side TTFB), or
+  `inworld-tts-2-flash` when latency or cost is the deciding factor (~20ms TTFB, same languages,
+  no steering instructions — non-verbal tags like `[laugh]` still work)
 
 Mention steering if not already known — TTS-2 supports `[whisper]`, `[say with rising excitement]`,
 inline `[laugh]`, etc.
@@ -48,7 +50,7 @@ export interface StreamingTtsOptions {
   apiKey: string;
   text: string;
   voiceId: string;
-  modelId?: "inworld-tts-2" | "inworld-tts-1.5-max" | "inworld-tts-1.5-mini";
+  modelId?: "inworld-tts-2" | "inworld-tts-2-flash" | "inworld-tts-1.5-max" | "inworld-tts-1.5-mini";
   audioEncoding?: "MP3" | "LINEAR16" | "OGG_OPUS";
   sampleRateHertz?: number;
   speakingRate?: number;
@@ -220,7 +222,7 @@ Tell the user:
 1. `export INWORLD_API_KEY=…` (or `.env`).
 2. Pick a voice with `list_voices`.
 3. Run the example with a short test phrase.
-4. They should hear audio start within ~200ms (or ~120ms with `inworld-tts-1.5-mini`).
+4. They should hear audio start within ~200ms including network (faster with `inworld-tts-2-flash`).
 
 If audio is choppy: confirm chunks are being flushed to the player as they arrive (no buffering
 all chunks first). If silence: check `Content-Type` of the response, confirm `audioContent`

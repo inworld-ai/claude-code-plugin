@@ -4275,7 +4275,7 @@ var require_schemes = __commonJS({
       urnComponent.nss = (uuidComponent.uuid || "").toLowerCase();
       return urnComponent;
     }
-    var http2 = (
+    var http3 = (
       /** @type {SchemeHandler} */
       {
         scheme: "http",
@@ -4288,7 +4288,7 @@ var require_schemes = __commonJS({
       /** @type {SchemeHandler} */
       {
         scheme: "https",
-        domainHost: http2.domainHost,
+        domainHost: http3.domainHost,
         parse: httpParse,
         serialize: httpSerialize
       }
@@ -4332,7 +4332,7 @@ var require_schemes = __commonJS({
     var SCHEMES = (
       /** @type {Record<SchemeName, SchemeHandler>} */
       {
-        http: http2,
+        http: http3,
         https,
         ws,
         wss,
@@ -16447,7 +16447,9 @@ async function getConf() {
             expiresAt: { type: "number" },
             workspace: { type: "string" },
             apiKey: { type: "string" },
-            env: { type: "string" }
+            env: { type: "string" },
+            authProvider: { type: "string" },
+            authUrl: { type: "string" }
           }
         }
       }
@@ -35003,8 +35005,8 @@ var require_escape_html = __commonJS({
   "../../node_modules/escape-html/index.js"(exports, module) {
     "use strict";
     var matchHtmlRegExp = /["'&<>]/;
-    module.exports = escapeHtml;
-    function escapeHtml(string3) {
+    module.exports = escapeHtml2;
+    function escapeHtml2(string3) {
       var str = "" + string3;
       var match = matchHtmlRegExp.exec(str);
       if (!match) {
@@ -35135,13 +35137,13 @@ var require_finalhandler = __commonJS({
     "use strict";
     var debug = require_src()("finalhandler");
     var encodeUrl = require_encodeurl();
-    var escapeHtml = require_escape_html();
+    var escapeHtml2 = require_escape_html();
     var onFinished = require_on_finished();
     var parseUrl = require_parseurl();
     var statuses = require_statuses();
     var isFinished = onFinished.isFinished;
     function createHtmlDocument(message) {
-      var body = escapeHtml(message).replaceAll("\n", "<br>").replaceAll("  ", " &nbsp;");
+      var body = escapeHtml2(message).replaceAll("\n", "<br>").replaceAll("  ", " &nbsp;");
       return '<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n<title>Error</title>\n</head>\n<body>\n<pre>' + body + "</pre>\n</body>\n</html>\n";
     }
     module.exports = finalhandler;
@@ -37476,7 +37478,7 @@ var require_application = __commonJS({
     var finalhandler = require_finalhandler();
     var debug = require_src()("express:application");
     var View = require_view();
-    var http2 = __require("node:http");
+    var http3 = __require("node:http");
     var methods = require_utils4().methods;
     var compileETag = require_utils4().compileETag;
     var compileQueryParser = require_utils4().compileQueryParser;
@@ -37709,7 +37711,7 @@ var require_application = __commonJS({
       tryRender(view, renderOptions, done);
     };
     app.listen = function listen() {
-      var server = http2.createServer(this);
+      var server = http3.createServer(this);
       var args = slice.call(arguments);
       if (typeof args[args.length - 1] === "function") {
         var done = args[args.length - 1] = once(args[args.length - 1]);
@@ -38484,12 +38486,12 @@ var require_request = __commonJS({
     var accepts = require_accepts();
     var isIP = __require("node:net").isIP;
     var typeis = require_type_is();
-    var http2 = __require("node:http");
+    var http3 = __require("node:http");
     var fresh = require_fresh();
     var parseRange = require_range_parser();
     var parse3 = require_parseurl();
     var proxyaddr = require_proxy_addr();
-    var req = Object.create(http2.IncomingMessage.prototype);
+    var req = Object.create(http3.IncomingMessage.prototype);
     module.exports = req;
     req.get = req.header = function header(name) {
       if (!name) {
@@ -39025,7 +39027,7 @@ var require_send = __commonJS({
     var createError = require_http_errors();
     var debug = require_src()("send");
     var encodeUrl = require_encodeurl();
-    var escapeHtml = require_escape_html();
+    var escapeHtml2 = require_escape_html();
     var etag = require_etag();
     var fresh = require_fresh();
     var fs5 = __require("fs");
@@ -39078,7 +39080,7 @@ var require_send = __commonJS({
       }
       var res = this.res;
       var msg = statuses.message[status] || String(status);
-      var doc = createHtmlDocument("Error", escapeHtml(msg));
+      var doc = createHtmlDocument("Error", escapeHtml2(msg));
       clearHeaders(res);
       if (err && err.headers) {
         setHeaders(res, err.headers);
@@ -39178,7 +39180,7 @@ var require_send = __commonJS({
         return;
       }
       var loc = encodeUrl(collapseLeadingSlashes(this.path + "/"));
-      var doc = createHtmlDocument("Redirecting", "Redirecting to " + escapeHtml(loc));
+      var doc = createHtmlDocument("Redirecting", "Redirecting to " + escapeHtml2(loc));
       res.statusCode = 301;
       res.setHeader("Content-Type", "text/html; charset=UTF-8");
       res.setHeader("Content-Length", Buffer.byteLength(doc));
@@ -39582,8 +39584,8 @@ var require_response = __commonJS({
     var createError = require_http_errors();
     var deprecate = require_depd()("express");
     var encodeUrl = require_encodeurl();
-    var escapeHtml = require_escape_html();
-    var http2 = __require("node:http");
+    var escapeHtml2 = require_escape_html();
+    var http3 = __require("node:http");
     var onFinished = require_on_finished();
     var mime = require_mime_types();
     var path7 = __require("node:path");
@@ -39599,7 +39601,7 @@ var require_response = __commonJS({
     var resolve2 = path7.resolve;
     var vary = require_vary();
     var { Buffer: Buffer2 } = __require("node:buffer");
-    var res = Object.create(http2.ServerResponse.prototype);
+    var res = Object.create(http3.ServerResponse.prototype);
     module.exports = res;
     res.status = function status(code) {
       if (!Number.isInteger(code)) {
@@ -39921,7 +39923,7 @@ var require_response = __commonJS({
           body = statuses.message[status] + ". Redirecting to " + address;
         },
         html: function() {
-          var u = escapeHtml(address);
+          var u = escapeHtml2(address);
           body = "<p>" + statuses.message[status] + ". Redirecting to " + u + "</p>";
         },
         default: function() {
@@ -40049,7 +40051,7 @@ var require_serve_static = __commonJS({
   "../../node_modules/serve-static/index.js"(exports, module) {
     "use strict";
     var encodeUrl = require_encodeurl();
-    var escapeHtml = require_escape_html();
+    var escapeHtml2 = require_escape_html();
     var parseUrl = require_parseurl();
     var resolve2 = __require("path").resolve;
     var send = require_send();
@@ -40135,7 +40137,7 @@ var require_serve_static = __commonJS({
         originalUrl.path = null;
         originalUrl.pathname = collapseLeadingSlashes(originalUrl.pathname + "/");
         var loc = encodeUrl(url.format(originalUrl));
-        var doc = createHtmlDocument("Redirecting", "Redirecting to " + escapeHtml(loc));
+        var doc = createHtmlDocument("Redirecting", "Redirecting to " + escapeHtml2(loc));
         res.statusCode = 301;
         res.setHeader("Content-Type", "text/html; charset=UTF-8");
         res.setHeader("Content-Length", Buffer.byteLength(doc));
@@ -62378,7 +62380,12 @@ function loadSession() {
     const raw = fs4.readFileSync(p, "utf8");
     const data = JSON.parse(raw);
     if (!data?.token || !data?.type) return null;
-    return data;
+    const { firebaseIdToken, firebaseRefreshToken, ...rest } = data;
+    return {
+      ...rest,
+      identityToken: rest.identityToken ?? firebaseIdToken,
+      identityRefreshToken: rest.identityRefreshToken ?? firebaseRefreshToken
+    };
   } catch {
     return null;
   }
@@ -62392,11 +62399,18 @@ function saveSession(session) {
   } catch {
   }
 }
+function clearSession() {
+  const p = getSessionFilePath();
+  try {
+    fs4.unlinkSync(p);
+  } catch {
+  }
+}
 function hasStoredCredentials() {
   const s = loadSession();
   if (!s?.token || !s?.type) return false;
   if (isSessionActive(s)) return true;
-  return typeof s.firebaseRefreshToken === "string" && s.firebaseRefreshToken.length > 0;
+  return typeof s.identityRefreshToken === "string" && s.identityRefreshToken.length > 0;
 }
 async function hasUsableAuthCredentials() {
   if (process.env.INWORLD_API_KEY?.trim()) return true;
@@ -62416,85 +62430,6 @@ var init_session = __esm({
     init_dist4();
     init_paths();
     TIME_DIFF_MS = 120 * 1e3;
-  }
-});
-
-// src/mcp/auth/exchange.ts
-function formatNetworkError(err, url) {
-  if (err instanceof TypeError && err.message === "fetch failed") {
-    const cause = err.cause;
-    const code = cause?.code ?? "";
-    const hint = "Set INWORLD_PLATFORM_URL or INWORLD_ENV (DEV/STAGE/PROD) to match your environment.";
-    return new Error(
-      `Cannot reach platform at ${url}${code ? ` (${code})` : ""}. ${hint}`
-    );
-  }
-  return err instanceof Error ? err : new Error(String(err));
-}
-function extractGatewayErrorMessage(data, fallback) {
-  if (data && typeof data === "object") {
-    const o = data;
-    if (typeof o.message === "string" && o.message.length > 0) {
-      return o.message;
-    }
-    const err = o.error;
-    if (err && typeof err === "object" && typeof err.message === "string") {
-      return err.message;
-    }
-  }
-  return fallback;
-}
-async function exchangeFirebaseIdToken(firebaseIdToken) {
-  const base = PLATFORM_URL.replace(/\/$/, "");
-  const url = `${base}/v1alpha/users:generateTokenUser`;
-  const body = JSON.stringify({
-    type: "AUTH_TYPE_FIREBASE",
-    token: firebaseIdToken
-  });
-  let res;
-  try {
-    res = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${firebaseIdToken}`,
-        [BEARER_TYPE_HEADER]: "firebase"
-      },
-      body
-    });
-  } catch (err) {
-    throw formatNetworkError(err, url);
-  }
-  const text = await res.text();
-  let data;
-  try {
-    data = text ? JSON.parse(text) : {};
-  } catch {
-    throw new Error(
-      `generateTokenUser: response was not JSON (${res.status}): ${text.slice(0, 240)}`
-    );
-  }
-  if (!res.ok) {
-    const msg = extractGatewayErrorMessage(
-      data,
-      `HTTP ${res.status}: ${text.slice(0, 400)}`
-    );
-    throw new Error(`generateTokenUser failed: ${msg}`);
-  }
-  const session = data;
-  if (!session.token || !session.type) {
-    throw new Error(
-      "generateTokenUser: success response missing token or type. Check INWORLD_PLATFORM_URL and environment."
-    );
-  }
-  return session;
-}
-var BEARER_TYPE_HEADER;
-var init_exchange = __esm({
-  "src/mcp/auth/exchange.ts"() {
-    "use strict";
-    init_constants5();
-    BEARER_TYPE_HEADER = "Grpc-Metadata-X-Authorization-Bearer-Type";
   }
 });
 
@@ -62542,38 +62477,9 @@ var init_firebase_refresh = __esm({
   }
 });
 
-// src/mcp/auth/cli-store-bridge.ts
-async function hydrateMcpSessionFromCliStore() {
-  const c = await readStoredCredentials();
-  if (!c?.refreshToken?.trim()) {
-    return null;
-  }
-  try {
-    const rt = await refreshFirebaseWithRefreshToken(c.refreshToken.trim());
-    const exchanged = await exchangeFirebaseIdToken(rt.idToken);
-    const merged = {
-      ...exchanged,
-      firebaseIdToken: rt.idToken,
-      firebaseRefreshToken: rt.refreshToken,
-      email: c.email ?? exchanged.email
-    };
-    saveSession(merged);
-    return merged;
-  } catch {
-    return null;
-  }
-}
-var init_cli_store_bridge = __esm({
-  "src/mcp/auth/cli-store-bridge.ts"() {
-    "use strict";
-    init_dist4();
-    init_exchange();
-    init_firebase_refresh();
-    init_session();
-  }
-});
-
-// src/mcp/auth/session-refresh.ts
+// src/mcp/auth/identity.ts
+import { createHash as createHash2, randomBytes } from "node:crypto";
+import * as http from "node:http";
 function decodeJwtPayload(jwt) {
   const parts = jwt.split(".");
   if (parts.length < 2) return null;
@@ -62585,6 +62491,336 @@ function decodeJwtPayload(jwt) {
     return null;
   }
 }
+function tokenIssuer(idToken) {
+  const iss = decodeJwtPayload(idToken)?.iss;
+  return typeof iss === "string" ? iss.replace(/\/$/, "") : void 0;
+}
+function providerForToken(idToken) {
+  const iss = tokenIssuer(idToken);
+  return iss && /\/auth\/v1$/.test(iss) ? "supabase" : "firebase";
+}
+function bearerTypeFor(provider) {
+  return provider === "supabase" ? "supabase" : "firebase";
+}
+function authTypeFor(provider) {
+  return provider === "supabase" ? "AUTH_TYPE_SUPABASE" : "AUTH_TYPE_FIREBASE";
+}
+function parseConfigJs(text) {
+  const pick2 = (key) => new RegExp(`["']?${key}["']?\\s*:\\s*["']([^"']+)["']`).exec(text)?.[1];
+  return {
+    authProvider: pick2("AUTH_PROVIDER"),
+    supabaseUrl: pick2("SUPABASE_URL")
+  };
+}
+async function resolveIdentitySource(platformUrl) {
+  const base = platformUrl.replace(/\/$/, "");
+  const override = process.env.INWORLD_AUTH_PROVIDER?.trim().toLowerCase();
+  let config2 = {};
+  if (override !== "firebase") {
+    try {
+      const res = await fetch(`${base}/config.js`, {
+        signal: AbortSignal.timeout(5e3)
+      });
+      if (res.ok) config2 = parseConfigJs(await res.text());
+    } catch {
+    }
+  }
+  const provider = (override || config2.authProvider || "firebase").toLowerCase();
+  if (provider !== "supabase") return { provider: "firebase" };
+  const authUrl = process.env.INWORLD_AUTH_URL?.trim() || `${(config2.supabaseUrl || base).replace(/\/$/, "")}/auth/v1`;
+  return { provider: "supabase", authUrl: authUrl.replace(/\/$/, "") };
+}
+function gotrueErrorMessage(data, fallback) {
+  if (data && typeof data === "object") {
+    const o = data;
+    for (const key of ["error_description", "msg", "message", "error"]) {
+      if (typeof o[key] === "string" && o[key]) return o[key];
+    }
+  }
+  return fallback;
+}
+async function gotrueToken(authUrl, grantType, body) {
+  const url = `${authUrl}/token?grant_type=${grantType}`;
+  const res = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body)
+  });
+  const text = await res.text();
+  let data = {};
+  try {
+    data = text ? JSON.parse(text) : {};
+  } catch {
+    throw new Error(
+      `Supabase token (${grantType}): expected JSON (${res.status}): ${text.slice(0, 200)}`
+    );
+  }
+  if (!res.ok) {
+    throw new Error(
+      `Supabase token (${grantType}) failed: ${gotrueErrorMessage(data, `HTTP ${res.status}`)}`
+    );
+  }
+  if (!data.access_token || !data.refresh_token) {
+    throw new Error(
+      `Supabase token (${grantType}): response missing access or refresh token`
+    );
+  }
+  return {
+    idToken: data.access_token,
+    refreshToken: data.refresh_token,
+    email: data.user?.email
+  };
+}
+async function refreshIdentityToken(source, refreshToken) {
+  if (source.provider === "supabase") {
+    if (!source.authUrl) throw new Error("Supabase refresh needs an auth URL");
+    return gotrueToken(source.authUrl, "refresh_token", {
+      refresh_token: refreshToken
+    });
+  }
+  const r = await refreshFirebaseWithRefreshToken(refreshToken);
+  return { idToken: r.idToken, refreshToken: r.refreshToken };
+}
+function createPkcePair() {
+  const verifier = base64url2(randomBytes(32));
+  const challenge = base64url2(createHash2("sha256").update(verifier).digest());
+  return { verifier, challenge };
+}
+function gotrueAuthorizeUrl(authUrl, oauthProvider, redirectTo, challenge) {
+  const u = new URL(`${authUrl}/authorize`);
+  u.searchParams.set("provider", oauthProvider);
+  u.searchParams.set("redirect_to", redirectTo);
+  u.searchParams.set("code_challenge", challenge);
+  u.searchParams.set("code_challenge_method", "s256");
+  return u.toString();
+}
+function gotrueCallbackPort() {
+  const fixed = process.env.INWORLD_CLI_AUTH_CALLBACK_PORT?.trim();
+  return fixed ? parseInt(fixed, 10) : 0;
+}
+async function startCodeReceiver(port) {
+  let settle;
+  const code = new Promise((resolve2, reject) => {
+    settle = { resolve: resolve2, reject };
+  });
+  const handler = (req, res) => {
+    const url = new URL(req.url ?? "/", "http://127.0.0.1");
+    if (url.pathname !== "/") {
+      res.writeHead(404).end();
+      return;
+    }
+    const error2 = url.searchParams.get("error_description") ?? url.searchParams.get("error");
+    const authCode = url.searchParams.get("code");
+    res.writeHead(error2 || !authCode ? 400 : 200, {
+      "Content-Type": "text/html; charset=utf-8"
+    });
+    if (error2 || !authCode) {
+      const msg = error2 ?? "No authorization code in the redirect.";
+      res.end(resultPage("Sign-in failed", escapeHtml(msg)));
+      settle.reject(new Error(`Sign-in failed: ${msg}`));
+      return;
+    }
+    res.end(
+      resultPage(
+        "Signed in to Inworld CLI",
+        "You can close this tab and return to the terminal."
+      )
+    );
+    settle.resolve(authCode);
+  };
+  const server = http.createServer({ keepAlive: false }, handler);
+  await new Promise((resolve2, reject) => {
+    server.once("error", reject);
+    server.listen(port, "127.0.0.1", () => resolve2());
+  });
+  const { port: boundPort } = server.address();
+  const timer = setTimeout(
+    () => settle.reject(
+      new Error(
+        `Sign-in timed out after ${OAUTH_SIGN_IN_TIMEOUT_MS / 6e4} minutes. Run the login again.`
+      )
+    ),
+    OAUTH_SIGN_IN_TIMEOUT_MS
+  );
+  timer.unref();
+  return {
+    redirectTo: `http://127.0.0.1:${boundPort}`,
+    code,
+    close: () => {
+      clearTimeout(timer);
+      server.close();
+      server.closeAllConnections?.();
+    }
+  };
+}
+async function startOAuthSignIn(options) {
+  const { verifier, challenge } = createPkcePair();
+  const receiver = await startCodeReceiver(
+    options.port ?? gotrueCallbackPort()
+  );
+  const url = gotrueAuthorizeUrl(
+    options.authUrl,
+    options.oauthProvider,
+    receiver.redirectTo,
+    challenge
+  );
+  const done = receiver.code.then(
+    (authCode) => gotrueToken(options.authUrl, "pkce", {
+      auth_code: authCode,
+      code_verifier: verifier
+    })
+  ).finally(receiver.close);
+  return { url, done };
+}
+var BEARER_TYPE_HEADER, GOTRUE_OAUTH_PROVIDERS, base64url2, resultPage, escapeHtml, OAUTH_SIGN_IN_TIMEOUT_MS;
+var init_identity = __esm({
+  "src/mcp/auth/identity.ts"() {
+    "use strict";
+    init_firebase_refresh();
+    BEARER_TYPE_HEADER = "Grpc-Metadata-X-Authorization-Bearer-Type";
+    GOTRUE_OAUTH_PROVIDERS = ["google", "github", "azure"];
+    base64url2 = (buf) => buf.toString("base64").replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+    resultPage = (title, detail) => `<!doctype html><html><head><meta charset="utf-8"><title>${title}</title></head><body style="font-family:system-ui;margin:4rem auto;max-width:32rem;text-align:center"><h2>${title}</h2><p>${detail}</p></body></html>`;
+    escapeHtml = (s) => s.replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
+    OAUTH_SIGN_IN_TIMEOUT_MS = 5 * 60 * 1e3;
+  }
+});
+
+// src/mcp/auth/exchange.ts
+function formatNetworkError(err, url) {
+  if (err instanceof TypeError && err.message === "fetch failed") {
+    const cause = err.cause;
+    const code = cause?.code ?? "";
+    const hint = "Set INWORLD_PLATFORM_URL or INWORLD_ENV (DEV/STAGE/PROD) to match your environment.";
+    return new Error(
+      `Cannot reach platform at ${url}${code ? ` (${code})` : ""}. ${hint}`
+    );
+  }
+  return err instanceof Error ? err : new Error(String(err));
+}
+function extractGatewayErrorMessage(data, fallback) {
+  if (data && typeof data === "object") {
+    const o = data;
+    if (typeof o.message === "string" && o.message.length > 0) {
+      return o.message;
+    }
+    const err = o.error;
+    if (err && typeof err === "object" && typeof err.message === "string") {
+      return err.message;
+    }
+  }
+  return fallback;
+}
+async function exchangeIdentityToken(identityToken) {
+  const provider = providerForToken(identityToken);
+  const base = PLATFORM_URL.replace(/\/$/, "");
+  const url = `${base}/v1alpha/users:generateTokenUser`;
+  const body = JSON.stringify({
+    type: authTypeFor(provider),
+    token: identityToken
+  });
+  let res;
+  try {
+    res = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${identityToken}`,
+        [BEARER_TYPE_HEADER]: bearerTypeFor(provider)
+      },
+      body
+    });
+  } catch (err) {
+    throw formatNetworkError(err, url);
+  }
+  const text = await res.text();
+  let data;
+  try {
+    data = text ? JSON.parse(text) : {};
+  } catch {
+    throw new Error(
+      `generateTokenUser: response was not JSON (${res.status}): ${text.slice(0, 240)}`
+    );
+  }
+  if (!res.ok) {
+    const msg = extractGatewayErrorMessage(
+      data,
+      `HTTP ${res.status}: ${text.slice(0, 400)}`
+    );
+    throw new Error(`generateTokenUser failed: ${msg}`);
+  }
+  const session = data;
+  if (!session.token || !session.type) {
+    throw new Error(
+      "generateTokenUser: success response missing token or type. Check INWORLD_PLATFORM_URL and environment."
+    );
+  }
+  return session;
+}
+var init_exchange = __esm({
+  "src/mcp/auth/exchange.ts"() {
+    "use strict";
+    init_constants5();
+    init_identity();
+  }
+});
+
+// src/mcp/auth/cli-store-bridge.ts
+function identitySourceOfStore(c) {
+  return c.authProvider === "supabase" ? { provider: "supabase", authUrl: c.authUrl } : { provider: "firebase" };
+}
+async function persistRotatedRefreshToken(used, next) {
+  const c = await readStoredCredentials();
+  if (!c?.refreshToken) return false;
+  if (used !== next && c.refreshToken === used) {
+    await writeStoredCredentials({ ...c, refreshToken: next });
+  }
+  return true;
+}
+async function saveSessionUnlessLoggedOut(session) {
+  saveSession(session);
+  const c = await readStoredCredentials().catch(() => null);
+  if (c?.refreshToken) return true;
+  clearSession();
+  return false;
+}
+async function hydrateMcpSessionFromCliStore() {
+  const c = await readStoredCredentials();
+  const refreshToken = c?.refreshToken?.trim();
+  if (!c || !refreshToken) {
+    return null;
+  }
+  try {
+    const source = identitySourceOfStore(c);
+    const rt = await refreshIdentityToken(source, refreshToken);
+    if (!await persistRotatedRefreshToken(refreshToken, rt.refreshToken)) {
+      return null;
+    }
+    const exchanged = await exchangeIdentityToken(rt.idToken);
+    const merged = {
+      ...exchanged,
+      identityToken: rt.idToken,
+      identityRefreshToken: rt.refreshToken,
+      authProvider: source.provider,
+      authUrl: source.authUrl,
+      email: c.email ?? exchanged.email
+    };
+    return await saveSessionUnlessLoggedOut(merged) ? merged : null;
+  } catch {
+    return null;
+  }
+}
+var init_cli_store_bridge = __esm({
+  "src/mcp/auth/cli-store-bridge.ts"() {
+    "use strict";
+    init_dist4();
+    init_exchange();
+    init_identity();
+    init_session();
+  }
+});
+
+// src/mcp/auth/session-refresh.ts
 function isJwtNearExpiry(jwt, marginMs) {
   const p = decodeJwtPayload(jwt);
   const exp = p?.exp;
@@ -62597,6 +62833,19 @@ function shouldRefreshInworld(s) {
   if (exp == null) return false;
   return exp - Date.now() < INWORLD_RENEW_MARGIN_MS;
 }
+async function currentRefreshToken(s, source) {
+  if (source.provider === "supabase") {
+    try {
+      const c = await readStoredCredentials();
+      const stored = c ? identitySourceOfStore(c) : void 0;
+      if (c?.refreshToken && stored?.authUrl === source.authUrl) {
+        return c.refreshToken.trim();
+      }
+    } catch {
+    }
+  }
+  return s.identityRefreshToken?.trim();
+}
 async function getValidSession() {
   const fromReq = getRequestSession();
   if (fromReq?.token && fromReq?.type) {
@@ -62607,25 +62856,31 @@ async function getValidSession() {
     s = await hydrateMcpSessionFromCliStore();
   }
   if (!s?.token || !s?.type) return null;
-  const refresh = s.firebaseRefreshToken?.trim();
-  const needFirebaseRefresh = typeof s.firebaseIdToken === "string" && s.firebaseIdToken.length > 0 && isJwtNearExpiry(s.firebaseIdToken, FIREBASE_RENEW_MARGIN_MS);
+  const needIdentityRefresh = typeof s.identityToken === "string" && s.identityToken.length > 0 && isJwtNearExpiry(s.identityToken, IDENTITY_RENEW_MARGIN_MS);
   const needInworldRefresh = shouldRefreshInworld(s);
-  if (!needInworldRefresh && !needFirebaseRefresh) {
+  if (!needInworldRefresh && !needIdentityRefresh) {
     return s;
   }
+  const source = s.authProvider === "supabase" ? { provider: "supabase", authUrl: s.authUrl } : { provider: "firebase" };
+  const refresh = await currentRefreshToken(s, source);
   if (!refresh) {
     return isSessionActive(s) ? s : null;
   }
   try {
-    const rt = await refreshFirebaseWithRefreshToken(refresh);
-    const exchanged = await exchangeFirebaseIdToken(rt.idToken);
+    const rt = await refreshIdentityToken(source, refresh);
+    if (!await persistRotatedRefreshToken(refresh, rt.refreshToken)) {
+      return null;
+    }
+    const exchanged = await exchangeIdentityToken(rt.idToken);
     const merged = {
       ...exchanged,
-      firebaseIdToken: rt.idToken,
-      firebaseRefreshToken: rt.refreshToken,
+      identityToken: rt.idToken,
+      identityRefreshToken: rt.refreshToken,
+      authProvider: source.provider,
+      authUrl: source.authUrl,
       email: s.email
     };
-    saveSession(merged);
+    if (!await saveSessionUnlessLoggedOut(merged)) return null;
     const next = loadSession();
     if (!next?.token || !next?.type) return null;
     return isSessionActive(next) ? next : null;
@@ -62633,16 +62888,17 @@ async function getValidSession() {
     return isSessionActive(s) ? s : null;
   }
 }
-var FIREBASE_RENEW_MARGIN_MS, INWORLD_RENEW_MARGIN_MS;
+var IDENTITY_RENEW_MARGIN_MS, INWORLD_RENEW_MARGIN_MS;
 var init_session_refresh = __esm({
   "src/mcp/auth/session-refresh.ts"() {
     "use strict";
+    init_dist4();
     init_cli_store_bridge();
     init_exchange();
-    init_firebase_refresh();
+    init_identity();
     init_request_session();
     init_session();
-    FIREBASE_RENEW_MARGIN_MS = 10 * 60 * 1e3;
+    IDENTITY_RENEW_MARGIN_MS = 10 * 60 * 1e3;
     INWORLD_RENEW_MARGIN_MS = 3 * 60 * 1e3;
   }
 });
@@ -62658,21 +62914,20 @@ function headersForInworldSession(session) {
     [GRPC_BEARER_TYPE_METADATA]: "inworld"
   };
 }
-function headersForFirebaseIdToken(firebaseIdToken) {
-  if (!firebaseIdToken) {
-    throw new Error(
-      "Firebase ID token is required for workspace engine session"
-    );
+function headersForIdentityToken(identityToken) {
+  if (!identityToken) {
+    throw new Error("Identity token is required for workspace engine session");
   }
   return {
-    Authorization: `Bearer ${firebaseIdToken}`,
-    [GRPC_BEARER_TYPE_METADATA]: "firebase"
+    Authorization: `Bearer ${identityToken}`,
+    [GRPC_BEARER_TYPE_METADATA]: bearerTypeFor(providerForToken(identityToken))
   };
 }
 var GRPC_BEARER_TYPE_METADATA;
 var init_inworld_headers = __esm({
   "src/mcp/auth/inworld-headers.ts"() {
     "use strict";
+    init_identity();
     GRPC_BEARER_TYPE_METADATA = "Grpc-Metadata-X-Authorization-Bearer-Type";
   }
 });
@@ -63092,10 +63347,10 @@ async function fetchWorkspaceEngineSession(workspaceId) {
       "Not signed in or session expired. Run: inworld-mcp login (bearer mode cannot use voice engine APIs without Firebase ID token)."
     );
   }
-  const firebaseIdToken = user.firebaseIdToken;
-  if (!firebaseIdToken) {
+  const identityToken = user.identityToken;
+  if (!identityToken) {
     throw new Error(
-      "Session has no Firebase ID token (needed for workspace engine session). Run `inworld-mcp login` again, or use session-file auth instead of bearer-only HTTP."
+      "Session has no identity token (needed for workspace engine session). Run `inworld-mcp login` again, or use session-file auth instead of bearer-only HTTP."
     );
   }
   const base = PLATFORM_URL.replace(/\/$/, "");
@@ -63106,7 +63361,7 @@ async function fetchWorkspaceEngineSession(workspaceId) {
   const res = await fetch(url, {
     method: "POST",
     headers: {
-      ...headersForFirebaseIdToken(firebaseIdToken),
+      ...headersForIdentityToken(identityToken),
       "Content-Type": "application/json",
       Accept: "application/json"
     },
@@ -63459,7 +63714,7 @@ function registerRuntimeTools(server) {
           "Path to save the audio file. Extension is appended from encoding if missing."
         ),
         model_id: external_exports.enum(VALID_TTS_MODELS).default("inworld-tts-2").describe(
-          "TTS model. inworld-tts-2 (default, research preview) supports 100+ languages and steering. inworld-tts-1.5-max has <200ms latency across 15 languages. inworld-tts-1.5-mini is ultra-fast (~120ms)."
+          "TTS model. inworld-tts-2 (default) supports multilingual speech and steering; inworld-tts-2-flash provides lower latency. Legacy 1.5 models remain accepted."
         ),
         delivery_mode: external_exports.enum(VALID_DELIVERY_MODES).optional().describe(
           "TTS-2 only. STABLE = most consistent, BALANCED = default, CREATIVE = most varied, greater emotional range. Ignored by 1.5 models."
@@ -63997,6 +64252,7 @@ var init_register = __esm({
     ];
     VALID_TTS_MODELS = [
       "inworld-tts-2",
+      "inworld-tts-2-flash",
       "inworld-tts-1.5-max",
       "inworld-tts-1.5-mini"
     ];
@@ -64067,6 +64323,15 @@ var init_transcribe = __esm({
   }
 });
 
+// src/services/tts_models.ts
+var DEFAULT_TTS_MODEL;
+var init_tts_models = __esm({
+  "src/services/tts_models.ts"() {
+    "use strict";
+    DEFAULT_TTS_MODEL = "inworld-tts-2" /* INWORLD_TTS_2 */;
+  }
+});
+
 // src/mcp/tts/preview.ts
 async function getVoicePreviewV1(voiceId, modelId = DEFAULT_TTS_MODEL) {
   const id = voiceId.trim();
@@ -64076,12 +64341,11 @@ async function getVoicePreviewV1(voiceId, modelId = DEFAULT_TTS_MODEL) {
   const qs = new URLSearchParams({ voice_id: id, model_id: modelId });
   return studioApiGet(`/tts/v1/voice:preview?${qs.toString()}`, "TTS preview");
 }
-var DEFAULT_TTS_MODEL;
 var init_preview = __esm({
   "src/mcp/tts/preview.ts"() {
     "use strict";
+    init_tts_models();
     init_studio_api();
-    DEFAULT_TTS_MODEL = "inworld-tts-2";
   }
 });
 
@@ -64309,8 +64573,28 @@ var init_schemas4 = __esm({
   }
 });
 
+// src/mcp/auth/browser.ts
+import { execFile } from "node:child_process";
+import { promisify as promisify2 } from "node:util";
+async function openInBrowser(url) {
+  if (process.platform === "darwin") {
+    await execFileAsync("open", [url]);
+  } else if (process.platform === "win32") {
+    await execFileAsync("rundll32", ["url.dll,FileProtocolHandler", url]);
+  } else {
+    await execFileAsync("xdg-open", [url]);
+  }
+}
+var execFileAsync;
+var init_browser = __esm({
+  "src/mcp/auth/browser.ts"() {
+    "use strict";
+    execFileAsync = promisify2(execFile);
+  }
+});
+
 // src/mcp/auth/callback-server.ts
-import * as http from "http";
+import * as http2 from "http";
 async function createCallbackServer(options = {}) {
   const {
     port = INWORLD_CLI_AUTH_CALLBACK_PORT,
@@ -64318,7 +64602,7 @@ async function createCallbackServer(options = {}) {
     firebaseApiKey = FIREBASE_API_KEY
   } = options;
   return new Promise((resolve2, reject) => {
-    const httpServer = http.createServer({ keepAlive: false }, (req, res) => {
+    const httpServer = http2.createServer({ keepAlive: false }, (req, res) => {
       const origin = req.headers.origin;
       if (origin && allowedOrigins.includes(origin)) {
         res.setHeader("Access-Control-Allow-Origin", origin);
@@ -64434,91 +64718,120 @@ var init_callback_server = __esm({
 });
 
 // src/mcp/cli/login.ts
-import { exec } from "node:child_process";
 import * as readline from "node:readline";
-import { promisify as promisify2 } from "node:util";
-async function runLogin() {
-  const serverPromise = createCallbackServer({
-    port: INWORLD_CLI_AUTH_CALLBACK_PORT
-  });
+async function offerBrowser(url, done) {
   console.error("Please visit the following URL to authenticate:");
-  console.error(INWORLD_CLI_AUTH_URL);
+  console.error(url);
   console.error();
   const readlineInterface = readline.createInterface({
     input: process.stdin,
     output: process.stdout
   });
-  const enterPromise = new Promise((resolve2) => {
-    readlineInterface.question("Press Enter to open your browser...", () => {
-      resolve2();
-    });
+  const enter = new Promise((resolve2) => {
+    readlineInterface.question(
+      "Press Enter to open your browser...",
+      () => resolve2("enter")
+    );
   });
-  const result = await Promise.race([
-    enterPromise.then(() => ({ type: "enter" })),
-    serverPromise.then((r) => ({ type: "auth", result: r }))
-  ]);
+  const settled = done.then(
+    () => "done",
+    () => "done"
+  );
+  const first = await Promise.race([enter, settled]);
   readlineInterface.close();
-  let authServerResult;
-  if (result.type === "auth") {
-    authServerResult = result.result;
-  } else {
-    const openCommand = process.platform === "darwin" ? "open" : process.platform === "win32" ? "start" : "xdg-open";
-    try {
-      await execAsync(`${openCommand} ${INWORLD_CLI_AUTH_URL}`);
-      console.error("Browser opened.");
-    } catch {
-      console.error(
-        "Could not open browser automatically. Open the URL manually."
+  if (first === "done") return;
+  try {
+    await openInBrowser(url);
+    console.error("Browser opened.");
+  } catch {
+    console.error(
+      "Could not open browser automatically. Open the URL manually."
+    );
+  }
+  console.error();
+  console.error("Waiting for authentication...");
+}
+async function signInWithFirebase() {
+  const serverPromise = createCallbackServer({
+    port: INWORLD_CLI_AUTH_CALLBACK_PORT
+  });
+  await offerBrowser(INWORLD_CLI_AUTH_URL, serverPromise);
+  const result = await serverPromise;
+  await stopCallbackServer(result.server);
+  return {
+    idToken: result.token,
+    refreshToken: result.refreshToken,
+    email: result.email
+  };
+}
+async function runLogin() {
+  const source = await resolveIdentitySource(PLATFORM_URL);
+  let tokens;
+  if (source.provider === "supabase") {
+    const oauthProvider = process.env.INWORLD_AUTH_OAUTH_PROVIDER || "google";
+    if (!GOTRUE_OAUTH_PROVIDERS.includes(oauthProvider)) {
+      throw new Error(
+        `INWORLD_AUTH_OAUTH_PROVIDER=${oauthProvider} is not supported by inworld-mcp login (use ${GOTRUE_OAUTH_PROVIDERS.join(", ")}). ` + (oauthProvider === "email" ? "For email/password, run `inworld login --provider email`; the MCP server reuses that session." : "")
       );
     }
-    console.error();
-    console.error("Waiting for authentication...");
-    authServerResult = await serverPromise;
+    const { url, done } = await startOAuthSignIn({
+      authUrl: source.authUrl,
+      oauthProvider
+    });
+    await offerBrowser(url, done);
+    tokens = await done;
+  } else {
+    tokens = await signInWithFirebase();
   }
   console.error();
   console.error("Exchanging for Inworld session...");
-  const exchanged = await exchangeFirebaseIdToken(authServerResult.token);
+  const exchanged = await exchangeIdentityToken(tokens.idToken);
   const merged = {
     ...exchanged,
-    firebaseIdToken: authServerResult.token,
-    firebaseRefreshToken: authServerResult.refreshToken,
-    email: authServerResult.email
+    identityToken: tokens.idToken,
+    identityRefreshToken: tokens.refreshToken,
+    authProvider: source.provider,
+    authUrl: source.authUrl,
+    email: tokens.email
   };
   saveSession(merged);
   const expiresAt = getExpirationMs(merged) ?? Date.now() + 36e5;
   await writeStoredCredentials({
-    refreshToken: authServerResult.refreshToken,
-    email: authServerResult.email,
+    refreshToken: tokens.refreshToken,
+    email: tokens.email ?? "",
     inworldToken: merged.token ?? "",
     expiresAt,
-    env: INWORLD_ENV
+    env: INWORLD_ENV,
+    authProvider: source.provider,
+    authUrl: source.authUrl
   });
-  await stopCallbackServer(authServerResult.server);
   console.error();
   console.error("Signed in.");
-  console.error(`Email: ${authServerResult.email}`);
+  console.error(`Email: ${tokens.email}`);
   console.error(`Session saved: ${getSessionFilePath()}`);
   console.error(
     "CLI credentials updated \u2014 `inworld login` is not required separately."
   );
 }
-var execAsync;
 var init_login = __esm({
   "src/mcp/cli/login.ts"() {
     "use strict";
     init_dist4();
+    init_browser();
     init_callback_server();
     init_constants5();
     init_exchange();
+    init_identity();
     init_paths();
     init_session();
-    execAsync = promisify2(exec);
   }
 });
 
 // src/mcp/index.ts
 var mcp_exports = {};
 __export(mcp_exports, {
+  createMcpServer: () => createMcpServer,
+  detectToolModes: () => detectToolModes,
   main: () => main,
   runLogin: () => runLogin
 });
@@ -64575,7 +64888,7 @@ function createMcpServer(modes) {
       }
       const exp = getExpirationMs(s);
       const expLine = exp != null ? `Inworld access token expires approximately: ${new Date(exp).toISOString()} (UTC).` : "Inworld expiration time not present in session response.";
-      const refreshLine = s.firebaseRefreshToken ? "Automatic token refresh: enabled (Firebase refresh token on disk)." : "Automatic token refresh: not available until you run `inworld-mcp login` again (saves Firebase refresh token).";
+      const refreshLine = s.identityRefreshToken ? "Automatic token refresh: enabled (refresh token on disk)." : "Automatic token refresh: not available until you run `inworld-mcp login` again (saves a refresh token).";
       return {
         content: [
           {
@@ -65397,8 +65710,8 @@ function useHttpTransport() {
   return process.argv.includes("--http") || process.env.MCP_TRANSPORT === "http";
 }
 async function runStdio() {
-  await assertAuthenticatedOrExit();
   const modes = await detectToolModes();
+  if (!modes.runtimeOnly) await assertAuthenticatedOrExit();
   const server = createMcpServer(modes);
   const transport = new StdioServerTransport();
   await server.connect(transport);
