@@ -9,8 +9,8 @@
     {
       "name": "inworld",
       "source": "./inworld-tts-mcp",
-      "description": "Comprehensive Inworld AI integration for any project: TTS-2 (100+ languages, steering, streaming), STT (batch + streaming), Realtime voice agents, LLM Router, voice cloning, voice design, and LLM+TTS combined — wired up by Claude Code in seconds.",
-      "version": "0.8.0",
+      "description": "Official Inworld AI plugin for Claude Code — the top-rated TTS-2 model with natural-language steering across 100+ languages, hundreds of professional voices plus instant voice cloning & design, STT with voice profiling (age, emotion, accent), Realtime voice agents, and the LLM Router.",
+      "version": "0.8.1",
       "category": "ai",
       "keywords": [
         "tts",
