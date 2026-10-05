@@ -150,7 +150,7 @@ export interface RealtimeOptions {
   apiKey: string;             // Basic-auth API key (server-side only)
   systemPrompt: string;
   voice?: string;             // e.g. "Clive"
-  ttsModel?: "inworld-tts-2" | "inworld-tts-1.5-max" | "inworld-tts-1.5-mini";
+  ttsModel?: "inworld-tts-2" | "inworld-tts-2-flash" | "inworld-tts-1.5-max" | "inworld-tts-1.5-mini";
   llmModel?: string;          // e.g. "openai/gpt-4o-mini"
   onAudioDelta?: (pcm16Base64: string) => void;
   onTranscript?: (text: string, role: "user" | "assistant") => void;

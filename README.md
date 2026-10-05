@@ -39,7 +39,7 @@ The plugin's MCP server exposes 10 tools that Claude can call directly:
 | Tool | What it does |
 |---|---|
 | `list_voices` | Browse Inworld voices. Filters: `language`, `description_match` (keyword search of the voice description, e.g. `['warm']` — the reliable filter), `tags` (server-side tags, often empty today), `custom_only`. |
-| `synthesize_speech` | TTS-2 by default. Inline steering, `delivery_mode`, `WORD` or `CHARACTER` timestamps. |
+| `synthesize_speech` | TTS-2 by default; `inworld-tts-2-flash` for lowest latency. Inline steering, `delivery_mode`, `WORD` or `CHARACTER` timestamps. |
 | `transcribe_audio` | Batch STT (file → text). Optional voice profile (age, gender, accent, emotion). |
 | `clone_voice` | Clone a voice from one or more audio samples. Returns a new `voiceId`. |
 | `design_voice` | Generate up to 3 preview voices from a text description. |
@@ -82,7 +82,8 @@ Visit <phoneme alphabet="ipa" ph="ˈnaɪkiː">Nike</phoneme>'s site.
 
 | Model | Languages | Latency | Best for |
 |---|---|---|---|
-| `inworld-tts-2` (default) | 100+ | — | Quality, steering, multilingual |
+| `inworld-tts-2` (default) | 100+ | ~100 ms TTFB | Quality, steering, multilingual |
+| `inworld-tts-2-flash` | 100+ (same as TTS-2) | ~20 ms TTFB | Lowest latency and cost; no steering instructions (non-verbal tags like `[laugh]` still work) |
 | `inworld-tts-1.5-max` | 15 | <200 ms | Latency + quality balance |
 | `inworld-tts-1.5-mini` | 15 | ~120 ms | Lowest latency |
 
@@ -97,7 +98,7 @@ To change server behavior, change it in the CLI repo, then re-vendor:
 ```
 cd inworld-tts-mcp
 ./scripts/vendor.sh          # pinned npm version (see CLI_VERSION in the script)
-./scripts/vendor.sh 1.3.0    # specific npm version
+./scripts/vendor.sh 1.3.1    # specific npm version
 ./scripts/vendor.sh ~/code/inworld-cli   # local CLI checkout (must be built)
 ```
 

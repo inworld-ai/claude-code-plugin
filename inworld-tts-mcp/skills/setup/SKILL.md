@@ -65,7 +65,7 @@ function authHeaders() {
 export interface SynthesizeOptions {
   text: string;
   voiceId: string;
-  modelId?: "inworld-tts-2" | "inworld-tts-1.5-max" | "inworld-tts-1.5-mini";
+  modelId?: "inworld-tts-2" | "inworld-tts-2-flash" | "inworld-tts-1.5-max" | "inworld-tts-1.5-mini";
   audioEncoding?: "MP3" | "LINEAR16" | "WAV" | "OGG_OPUS" | "FLAC";
   sampleRateHertz?: number;
   speakingRate?: number;
@@ -192,7 +192,9 @@ Add `.env` to `.gitignore` if it isn't there.
 
 Call `list_voices` and show 5 voices the user might like. Mention that TTS-2
 voices respond to bracketed steering: `[whisper]`, `[say with rising excitement]`,
-`[laugh]`, etc.
+`[laugh]`, etc. If the user needs the lowest latency or cost, mention
+`inworld-tts-2-flash`: same languages, ~20ms TTFB vs ~100ms, but no steering
+instructions (non-verbal tags like `[laugh]` still work).
 
 Additional text features to mention in the helper module's docstring:
 - **Pauses**: SSML `<break time="500ms"/>` inline for explicit timing
