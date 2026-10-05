@@ -198,15 +198,25 @@ instructions (non-verbal tags like `[laugh]` still work).
 
 Additional text features to mention in the helper module's docstring:
 - **Pauses**: SSML `<break time="500ms"/>` inline for explicit timing
-- **Custom pronunciation**: `<phoneme alphabet="ipa" ph="ˈnaɪkiː">Nike</phoneme>` for
-  proper nouns and acronyms that TTS would otherwise mispronounce
+- **Custom pronunciation**: replace one word with its English IPA in slashes, e.g.
+  `a honeymoon in /kriːt/`, for proper nouns TTS would otherwise mispronounce
+- **Verbatim**: `<verbatim>AHAA7771Z</verbatim>` spells out codes and IDs
 - **Long text**: 2,000 character limit per call. For longer text, split at sentence
   boundaries client-side and concatenate the resulting audio (MP3 concatenation works;
-  PCM/WAV needs header handling).
+  PCM/WAV needs header handling), or use Inworld's async synthesis (preview, up to
+  100,000 characters as one background job)
 
-If the user wants to create their own custom voices (instead of just using the public
-library), point them at the `clone_voice` MCP tool (clones from 5+ seconds of audio)
-or `design_voice` (generates from a text description).
+If the user wants their own custom voices (instead of the public library):
+- **Instant cloning**: the `clone_voice` MCP tool. Recommend 15–30 seconds of clean,
+  single-speaker audio in the language the voice will speak; longer samples (up to
+  the 30-second limit) give better similarity.
+- **Voice design**: `design_voice` generates previews from a text description, then
+  `publish_voice` keeps the one they pick.
+- **Professional cloning (beta)**: for a production voice that must closely match a
+  real speaker, recommend Professional Voice Cloning: at least 10 minutes of clean
+  audio (up to 50 samples), fully supported in English, trained in the Inworld
+  Portal (TTS Playground → Create Voice → Professional Clone) or with the PVC API.
+  Voice slots and training rate depend on their plan.
 
 ## Step 6 — Prove it works
 

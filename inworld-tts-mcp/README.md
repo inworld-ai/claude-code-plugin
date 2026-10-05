@@ -1,10 +1,10 @@
 # Inworld AI for Claude Code
 
-Add Inworld's voice and language APIs to any project from inside Claude Code. The plugin gives Claude ten MCP tools for working with Inworld directly, plus six skills that write working integration code into your project:
+Add Inworld's voice and language APIs to any project from inside Claude Code. The plugin gives Claude ten MCP tools for working with Inworld directly, plus seven skills that write working integration code into your project:
 
 - **TTS-2**: 200+ languages and natural-language steering (`[whisper]`, `[say with rising excitement]`), plus **TTS-2 Flash** for the lowest latency
-- **Speech-to-text**: Inworld STT-1, batch and streaming, 30 languages, with optional voice profiling (age, emotion, pitch, vocal style, accent)
-- **Voices**: instant voice cloning and voice design
+- **Speech-to-text**: Inworld STT-1 in 30 languages: short clips, long recordings with speaker diarization, and live streaming, with optional voice profiling (age, emotion, pitch, vocal style, accent) and custom vocabulary
+- **Voices**: instant voice cloning (best with 15–30 seconds of clean audio) and voice design; the skills also guide you to Professional Voice Cloning (beta) for production voices
 - **Realtime voice agents**
 - **The Inworld LLM Router**
 
@@ -28,6 +28,7 @@ Add Inworld's voice and language APIs to any project from inside Claude Code. Th
 | `/inworld:add-voice` | Adds spoken output to one feature in your app, after previewing voices. |
 | `/inworld:add-realtime` | Scaffolds a Realtime voice-agent client: WebSocket, WebRTC, or Twilio. |
 | `/inworld:add-streaming-tts` | Scaffolds a low-latency streaming TTS client. |
+| `/inworld:add-transcription` | Scaffolds transcription of recorded audio: short clips, or long recordings as async jobs with speaker diarization. |
 | `/inworld:add-streaming-stt` | Scaffolds a live microphone-to-transcript client. |
 | `/inworld:troubleshoot` | Diagnoses Inworld API errors using Inworld's official docs and support knowledge base. |
 

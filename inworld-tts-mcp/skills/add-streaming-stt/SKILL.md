@@ -44,6 +44,21 @@ turn-taking. The streaming endpoint accepts LINEAR16 PCM only. If the user knows
 the spoken language, pass it as `language` — a hint improves accuracy,
 especially on short utterances.
 
+**Optional features**: ask which the feature needs, then add them to the
+`transcribeConfig` in the first WebSocket message:
+
+| Feature | Config | Notes |
+|---|---|---|
+| Speaker diarization | `enableSpeakerDiarization: true`, `includeWordTimestamps: true` | Each entry in `result.transcription.wordTimestamps` gets a `speaker` number (scoped to this stream). Use for meetings and calls. |
+| Custom vocabulary | `prompts: ["Inworld", "TTS-2", ...]` | Names, product terms, jargon. A soft bias, not a keyword lock. |
+| Voice Profile | `voiceProfileConfig: { enableVoiceProfile: true }` | Age, emotion, pitch, vocal style, accent labels with confidences. |
+| Tuned turn detection | `endOfTurnConfidenceThreshold` (default 0.4) and `inworldSttV1Config: { minEndOfTurnSilenceWhenConfident, maxTurnSilence }` (ms, 20–5000) | Raise the threshold or silences for slow speakers or noisy rooms. Keep the min silence ≤ the max. |
+| Manual turns (push-to-talk) | `inworldSttV1Config: { vadThreshold: 0 }` | Server stops splitting turns. Send `endTurn` at each boundary; a turn is capped at ~30 s. |
+
+The stream also emits `speechStarted` / `speechStopped` events, which are useful
+for barge-in, "listening…" indicators, or custom turn logic. For recordings rather
+than live audio, use `/inworld:add-transcription`.
+
 ## Step 3 — Scaffold the Node / server client
 
 `src/streaming-stt/client.ts`:
