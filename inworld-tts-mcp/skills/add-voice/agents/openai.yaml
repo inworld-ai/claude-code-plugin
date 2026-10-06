@@ -1,0 +1,4 @@
+interface:
+  display_name: "Add a Voice"
+  short_description: "Voice one feature with Inworld TTS-2"
+  default_prompt: "Give this feature an Inworld voice."

@@ -17,7 +17,7 @@ microphone → STT → LLM (router) → TTS-2 → speakers. It follows the OpenA
 Realtime protocol, so most messages will look familiar.
 
 The plugin's MCP server is for batch TTS/STT. Realtime audio cannot live in
-Claude's process — it must live in the user's app. This skill writes that code.
+the agent's MCP process — it must live in the user's app. This skill writes that code.
 
 ## Migrating from OpenAI Realtime?
 

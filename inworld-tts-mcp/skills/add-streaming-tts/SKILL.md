@@ -16,7 +16,7 @@ Inworld exposes streaming TTS two ways:
 | Transport | Endpoint | When to use |
 |---|---|---|
 | Chunked HTTP | `POST https://api.inworld.ai/tts/v1/voice:stream` | Server-side or anywhere fetch+streams work. Simpler. |
-| WebSocket    | `wss://api.inworld.ai/v1/tts/synthesize:websocket` | Lowest latency, bidirectional, allows mid-stream cancellation. |
+| WebSocket    | `wss://api.inworld.ai/tts/v1/voice:streamBidirectional` | Lowest latency, persistent connection, stream text in and cancel mid-utterance. |
 
 The plugin's MCP `synthesize_speech` tool uses the non-streaming endpoint and writes a complete
 file at the end. For chat agents that need playback to start before synthesis finishes, you want
@@ -152,57 +152,103 @@ export async function POST(req: Request) {
 
 `src/streaming-tts/ws-client.ts`:
 
+The protocol is context-based: `create` a context with the voice and audio settings,
+stream text into it with `send_text`, `flush_context` to force synthesis of what's
+buffered, and `close_context` when the utterance is done (or on barge-in). Messages are
+processed in order, so there's no need to wait for `contextCreated` before sending text.
+
 ```ts
 import WebSocket from "ws";
 
 export interface WsTtsOptions {
   apiKey: string;
   voiceId: string;
-  modelId?: string;
-  onAudioChunk?: (audio: Buffer) => void;
-  onDone?: () => void;
+  modelId?: "inworld-tts-2" | "inworld-tts-2-flash";
+  audioEncoding?: "MP3" | "LINEAR16" | "OGG_OPUS";
+  sampleRateHertz?: number;
+  onAudioChunk?: (audio: Buffer, contextId: string) => void;
+  onContextClosed?: (contextId: string) => void;
   onError?: (err: unknown) => void;
 }
 
 export class StreamingTtsWs {
   private ws: WebSocket;
+  private ready: Promise<void>;
+  private seq = 0;
+
   constructor(private opts: WsTtsOptions) {
-    this.ws = new WebSocket(
-      "wss://api.inworld.ai/v1/tts/synthesize:websocket",
-      { headers: { Authorization: `Basic ${opts.apiKey}` } }
-    );
+    this.ws = new WebSocket("wss://api.inworld.ai/tts/v1/voice:streamBidirectional", {
+      headers: { Authorization: `Basic ${opts.apiKey}` },
+    });
+    this.ready = new Promise((resolve, reject) => {
+      this.ws.once("open", () => resolve());
+      this.ws.once("error", reject);
+    });
     this.ws.on("message", (raw) => this.handle(JSON.parse(raw.toString())));
     this.ws.on("error", (e) => opts.onError?.(e));
   }
 
   private handle(msg: any) {
-    if (msg?.result?.audioContent) {
-      this.opts.onAudioChunk?.(Buffer.from(msg.result.audioContent, "base64"));
-    }
-    if (msg?.result?.isFinal) this.opts.onDone?.();
+    if (msg?.error) return this.opts.onError?.(msg.error);
+    const r = msg?.result;
+    if (!r) return;
+    const ctx = r.contextId ?? msg.contextId;
+    const b64 = r.audioChunk?.audioContent ?? r.audioContent;
+    if (b64) this.opts.onAudioChunk?.(Buffer.from(b64, "base64"), ctx);
+    if (r.contextClosed) this.opts.onContextClosed?.(ctx);
   }
 
-  /** Synthesize a chunk of text. Can be called multiple times in one session for streaming text input (e.g. piping LLM output token-by-token). */
-  speak(text: string) {
-    if (this.ws.readyState !== WebSocket.OPEN) return;
-    this.ws.send(JSON.stringify({
-      text,
-      voiceId: this.opts.voiceId,
-      modelId: this.opts.modelId ?? "inworld-tts-2",
-      audioConfig: { audioEncoding: "MP3", sampleRateHertz: 48000 },
-    }));
+  private async send(msg: object) {
+    await this.ready;
+    this.ws.send(JSON.stringify(msg));
   }
 
-  /** Cancel any in-flight synthesis (e.g. on user barge-in). */
-  cancel() {
-    if (this.ws.readyState === WebSocket.OPEN) {
-      this.ws.send(JSON.stringify({ cancel: {} }));
-    }
+  /** Open a new utterance context. Returns its id. */
+  async open(): Promise<string> {
+    const contextId = `ctx-${++this.seq}`;
+    await this.send({
+      context_id: contextId,
+      create: {
+        voice_id: this.opts.voiceId,
+        model_id: this.opts.modelId ?? "inworld-tts-2",
+        audio_config: {
+          audio_encoding: this.opts.audioEncoding ?? "MP3",
+          sample_rate_hertz: this.opts.sampleRateHertz ?? 48000,
+        },
+      },
+    });
+    return contextId;
+  }
+
+  /** Append text (up to 2,000 chars per message) — e.g. each sentence of an LLM stream. */
+  speak(contextId: string, text: string, flush = false) {
+    return this.send({
+      context_id: contextId,
+      send_text: flush ? { text, flush_context: {} } : { text },
+    });
+  }
+
+  /** Synthesize whatever is buffered now. */
+  flush(contextId: string) {
+    return this.send({ context_id: contextId, flush_context: {} });
+  }
+
+  /** Finish the utterance, or stop it early on barge-in, then open() a new one. */
+  closeContext(contextId: string) {
+    return this.send({ context_id: contextId, close_context: {} });
   }
 
   close() { this.ws.close(); }
 }
 ```
+
+Text accumulates server-side until a flush, until `buffer_char_threshold` (1,000
+characters by default) is reached, or until `max_buffer_delay_ms` elapses — so flush at
+sentence boundaries when piping an LLM stream. Browsers can't set the `Authorization`
+header: mint a one-time token on the backend and pass it as the `bearer_<token>`
+WebSocket subprotocol (`search_docs` "one-time tokens"). Official reference
+implementations: `inworld-ai/inworld-api-examples` → `tts/js/example_websocket.js` and
+`tts/python/example_websocket.py`.
 
 The WebSocket variant shines when you're piping an LLM stream into TTS in real time — feed each
 sentence as it's produced, and the audio starts playing before the LLM finishes.

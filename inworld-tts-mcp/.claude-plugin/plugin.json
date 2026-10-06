@@ -1,7 +1,7 @@
 {
   "name": "inworld",
   "displayName": "Inworld AI",
-  "version": "0.10.0",
+  "version": "0.11.0",
   "description": "Official Inworld AI plugin for Claude Code — the top-rated TTS-2 model with natural-language steering across 200+ languages, hundreds of professional voices plus instant voice cloning & design, STT with voice profiling (age, emotion, accent), Realtime voice agents, and the LLM Router.",
   "author": {
     "name": "Inworld AI",
@@ -26,7 +26,7 @@
     "api_key": {
       "type": "string",
       "title": "Inworld API Key",
-      "description": "Your Inworld API key (Base64-encoded). Get it from https://platform.inworld.ai/api-keys",
+      "description": "Your Inworld API key (Base64, from https://platform.inworld.ai/api-keys). No account yet? Sign up free at https://platform.inworld.ai/signup — or leave this blank and run /inworld:setup. You can also export INWORLD_API_KEY in your shell.",
       "sensitive": true
     }
   }

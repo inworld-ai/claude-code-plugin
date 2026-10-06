@@ -1,6 +1,6 @@
-# Inworld AI — Claude Code Plugin
+# Inworld AI — plugin for Claude Code and Codex
 
-Official Inworld AI plugin for Claude Code: the top-rated TTS-2 model with natural-language steering across 200+ languages, hundreds of professional voices plus instant voice cloning and design, STT with voice profiling, Realtime voice agents, and the LLM Router. Claude Code wires it into any project in seconds.
+Official Inworld AI plugin for Claude Code and Codex: the top-rated TTS-2 model with natural-language steering across 200+ languages, hundreds of professional voices plus instant voice cloning and design, STT with voice profiling, Realtime voice agents, and the LLM Router. Claude Code wires it into any project in seconds.
 
 - **TTS-2** — 200+ languages and locales, natural-language steering (`[whisper]`, `[say with rising excitement]`, `[laugh]`), `delivery_mode`, word & character timestamps
 - **TTS-2 Flash** — Inworld's fastest, lowest-cost model: ~20 ms time to first audio, same languages as TTS-2
@@ -13,22 +13,50 @@ Official Inworld AI plugin for Claude Code: the top-rated TTS-2 model with natur
 - **Professional voice cloning (beta)** — a fine-tuned clone that's more similar and stable, trained on 10+ minutes of audio; created in the Inworld Portal or with the PVC API
 - **Voice design** — generate voices from a text description (no audio sample required)
 - **LLM Router** — OpenAI-compatible chat completions with traffic-split routing, fallback, and A/B testing
-- **LLM + TTS combined** — one call: chat completion that returns audio directly
+- **Migration** — move an existing ElevenLabs, OpenAI, Cartesia, Deepgram, Google, Azure, or Polly integration to Inworld behind a switch
 
 ## Install
 
+**Claude Code**
+
 ```
 /plugin marketplace add inworld-ai/claude-code-plugin
-/plugin install inworld
+/plugin install inworld@inworld
 ```
 
-Claude Code will prompt for your Inworld API key. Get one at [platform.inworld.ai/api-keys](https://platform.inworld.ai/api-keys) — paste the Base64-encoded value as-is.
+Claude Code asks for your Inworld API key at install. Paste the Base64 value from [platform.inworld.ai/api-keys](https://platform.inworld.ai/api-keys) as is, or leave it blank and run `/inworld:connect` later.
 
-## Slash commands
+**Codex** (CLI or app)
 
-| Command | What it does |
+```
+codex plugin marketplace add inworld-ai/claude-code-plugin
+codex plugin add inworld@inworld
+```
+
+Or install **Inworld AI** from `/plugins` (CLI) or the **Plugins** page (app). Start a new session afterwards. Codex forwards `INWORLD_API_KEY` from your environment to the plugin.
+
+**No account yet?** [Sign up free](https://platform.inworld.ai/signup). The On-Demand plan includes up to 70 minutes of TTS and 400 minutes of STT. The plugin works before you sign up: docs search needs no key, and the `connect` skill walks you through getting one.
+
+### Where the plugin finds your key
+
+1. The plugin's API key setting (Claude Code install prompt)
+2. `INWORLD_API_KEY` in the environment the agent was launched from
+3. The Inworld CLI's file-based credential store. On macOS and Windows the CLI stores credentials in the OS keychain, which the bundled server can't read yet, so export the key instead:
+
+   ```
+   npx -y -p @inworld/cli@latest inworld login
+   export INWORLD_API_KEY="$(npx -y -p @inworld/cli@latest inworld auth print-api-key)"
+   ```
+
+## Skills
+
+In Claude Code, run these as `/inworld:<skill>`. Codex lists them under the plugin and also invokes them from plain requests.
+
+| Skill | What it does |
 |---|---|
 | `/inworld:setup [tts\|stt\|both]` | Detects your stack (Next.js, Express, FastAPI, Flask, plain Node/Python, etc.) and scaffolds a `lib/inworld.{ts,py}` helper module with TTS-2 + STT clients, adds `INWORLD_API_KEY` to `.env.example`, picks a voice, runs a Hello-from-Inworld test. |
+| `/inworld:connect [check]` | Checks whether the agent can reach Inworld; if not, walks through free signup and getting the key to the agent (env var or CLI login) and to your app. |
+| `/inworld:migrate [provider\|path]` | Finds existing ElevenLabs / OpenAI / Cartesia / Deepgram / cloud TTS calls, swaps them to Inworld behind a `TTS_PROVIDER` switch, maps voices and formats, and verifies with side-by-side samples. |
 | `/inworld:add-voice [where]` | Wires voice output into one specific feature. Browses voices, demos them with and without steering, then edits the relevant route or component. |
 | `/inworld:add-realtime [browser\|server\|twilio]` | Scaffolds a working Realtime client — WebSocket for server / Twilio, WebRTC for browser. Includes backend token minting, mic capture, audio playback, `session.update` wiring. Includes an OpenAI Realtime migration cheat sheet if you're already on that. |
 | `/inworld:add-streaming-tts [http\|websocket]` | Scaffolds a streaming TTS client for sub-200ms time-to-first-audio. Chunked HTTP for simplicity, WebSocket for cancellation + barge-in support. |
@@ -38,7 +66,7 @@ Claude Code will prompt for your Inworld API key. Get one at [platform.inworld.a
 
 ## MCP tools
 
-The plugin's MCP server exposes 10 tools that Claude can call directly:
+The plugin's MCP server exposes 10 tools the agent can call directly:
 
 | Tool | What it does |
 |---|---|
@@ -53,7 +81,7 @@ The plugin's MCP server exposes 10 tools that Claude can call directly:
 | `list_routers` | List your configured Inworld Routers. |
 | `search_docs` | AI search over Inworld's official knowledge: `docs` (docs portal + API reference), `website` (inworld.ai), `resolutions` (support knowledge base), `ui-actions` (Studio UI catalog). Public endpoint, no API key needed. |
 
-Realtime, streaming TTS, and streaming STT are intentionally **not** MCP tools — bidirectional streaming audio belongs in your app, not in Claude's MCP transport. The corresponding skills write that code into your project.
+Realtime, streaming TTS, and streaming STT are intentionally **not** MCP tools — bidirectional streaming audio belongs in your app, not in the agent's MCP transport. The corresponding skills write that code into your project.
 
 ## TTS-2 quick reference
 
@@ -114,11 +142,42 @@ cd inworld-tts-mcp
 ./scripts/vendor.sh ~/code/inworld-cli   # local CLI checkout (must be built)
 ```
 
-The script copies the artifact into `build/index.js` and runs `scripts/smoke.mjs`, which boots it standalone and asserts the 10-tool contract. The vendored `build/index.js` is committed so end-users don't need a build step.
+The script copies the artifact into `build/index.js` and runs `scripts/smoke.mjs`, which boots it standalone and asserts the 10-tool contract, then boots the plugin entry point with no key to confirm the server still starts. The vendored `build/index.js` is committed so end-users don't need a build step.
+
+### One plugin, two hosts
+
+`inworld-tts-mcp/` is a single plugin with a manifest per host. The skills, the vendored server, and the `scripts/start.mjs` entry point are shared.
+
+| | Claude Code | Codex |
+|---|---|---|
+| Marketplace | `.claude-plugin/marketplace.json` | `.agents/plugins/marketplace.json` |
+| Plugin manifest | `inworld-tts-mcp/.claude-plugin/plugin.json` | `inworld-tts-mcp/.codex-plugin/plugin.json` |
+| MCP config | `inworld-tts-mcp/.mcp.json` (`${CLAUDE_PLUGIN_ROOT}`, `${user_config.api_key}`) | inline `mcpServers` in the Codex manifest (`cwd: "."`, `env_vars` forwards `INWORLD_API_KEY`) |
+| Skill UI metadata | frontmatter | `skills/*/agents/openai.yaml` |
+
+Codex doesn't expand `${...}` placeholders and Claude Code doesn't resolve relative MCP paths, which is why the MCP config lives in two places. `scripts/start.mjs` resolves the key (plugin setting, then `INWORLD_API_KEY`, then the CLI credential store) and starts the server even with no key, so `search_docs` works before signup.
+
+Check both before a release:
+
+```
+claude plugin validate ./inworld-tts-mcp --strict
+claude plugin validate .
+python3 ~/.codex/skills/.system/plugin-creator/scripts/validate_plugin.py ./inworld-tts-mcp   # needs pyyaml
+node inworld-tts-mcp/scripts/smoke.mjs
+```
+
+To try the Codex build without touching your real Codex config:
+
+```
+export CODEX_HOME="$(mktemp -d)"
+codex plugin marketplace add "$PWD"
+codex plugin add inworld@inworld
+codex mcp get inworld
+```
 
 ### Targeting a non-prod environment
 
-The MCP server defaults to the production API (`https://api.inworld.ai`). To point it at a different environment (internal dev/staging), set `INWORLD_API_BASE` in the environment Claude Code is launched from:
+The MCP server defaults to the production API (`https://api.inworld.ai`). To point it at a different environment (internal dev/staging), set `INWORLD_API_BASE` in the environment the agent is launched from:
 
 ```sh
 export INWORLD_API_BASE="https://your-dev-endpoint.example.com"

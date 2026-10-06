@@ -12,16 +12,33 @@ never had the plugin:
 ```
 # one-time, while the repo is private (Inworld employees):
 gh auth setup-git
+```
 
-# in Claude Code, any project — run each command on ITS OWN line:
+**Claude Code** (any project; run each command on its own line):
+
+```
 /plugin marketplace add https://github.com/inworld-ai/claude-code-plugin
-/plugin install inworld
+/plugin install inworld@inworld
 ```
 
 - Choose **user scope** when prompted.
-- Paste your Inworld API key (Base64, from platform.inworld.ai/api-keys).
-- **Fully restart Claude Code** — MCP servers only register at session start.
-- `/mcp` should list `plugin:inworld:inworld · connected · 9 tools`.
+- Paste your Inworld API key (Base64, from platform.inworld.ai/api-keys), or skip it and export `INWORLD_API_KEY` in the shell that launches Claude Code.
+- **Fully restart Claude Code**: MCP servers only register at session start.
+- `/mcp` should list `plugin:inworld:inworld · connected · 10 tools`, with or without an API key.
+
+**Codex** (CLI bundled with the ChatGPT desktop app at
+`/Applications/ChatGPT.app/Contents/Resources/codex`, or `codex` on PATH). Codex has
+no install-time key prompt, so the key comes from the environment:
+
+```
+export INWORLD_API_KEY="<key>"     # in the shell that launches Codex
+codex plugin marketplace add https://github.com/inworld-ai/claude-code-plugin
+codex plugin add inworld@inworld
+codex mcp get inworld     # command node, args scripts/start.mjs, cwd = plugin root
+```
+
+- Start a new Codex session after installing or changing the key: MCP servers read their environment at startup.
+- In a session, ask for the Inworld voices; a voice list means connected. Without a key, the server still starts and `search_docs` works.
 
 Known trap: plugin installs are cached **by version**. If you ever see stale
 behavior after an update, `/plugin uninstall inworld`, `/plugin marketplace

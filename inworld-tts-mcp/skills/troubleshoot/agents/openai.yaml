@@ -1,0 +1,4 @@
+interface:
+  display_name: "Troubleshoot Inworld"
+  short_description: "Diagnose Inworld API errors from the docs"
+  default_prompt: "Help me debug this Inworld API error."

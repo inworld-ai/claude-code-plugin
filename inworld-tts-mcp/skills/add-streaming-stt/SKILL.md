@@ -19,7 +19,7 @@ results with `isFinal: true|false`. Lower-latency than batch STT, and unlike
 the full Realtime API it does *not* require an LLM — just audio in, text out.
 
 The plugin's MCP server only exposes batch STT (`transcribe_audio`) — streaming
-audio cannot live inside Claude's MCP process. This skill writes a streaming
+audio cannot live inside the agent's MCP process. This skill writes a streaming
 client into the user's app.
 
 ## Step 1 — Pick the transport
