@@ -1,0 +1,4 @@
+interface:
+  display_name: "Speakable Text"
+  short_description: "Fix IDs, markdown and tags before TTS speaks them"
+  default_prompt: "Check the text this app sends to Inworld TTS and fix what will sound wrong."

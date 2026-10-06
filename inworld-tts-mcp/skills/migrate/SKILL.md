@@ -109,7 +109,7 @@ Field mapping:
 | speed | `audioConfig.speakingRate` (0.5–1.5) |
 | stability-style voice settings | `deliveryMode`: `STABLE`, `BALANCED` (default), `CREATIVE` — an approximation; tell the user it is a judgment call |
 | word / character timestamps | `timestampType: "WORD"` or `"CHARACTER"` |
-| pronunciation dictionaries, SSML `<phoneme>` | inline `<phoneme alphabet="ipa" ph="…">word</phoneme>` |
+| pronunciation dictionaries, SSML `<phoneme>` | inline English IPA between slashes, one word at a time: `/kriːt/` (`<phoneme>` is not supported) |
 | SSML `<break>` | inline `<break time="500ms"/>` |
 | style / emotion prompts | TTS-2 steering tags inline, e.g. `[say warmly]`, `[whisper]` (`inworld-tts-2` only; if the app needs both speed and style, test both models) |
 

@@ -1,6 +1,6 @@
 # Inworld AI for Claude Code
 
-Add Inworld's voice and language APIs to any project from inside Claude Code. The plugin gives Claude ten MCP tools for working with Inworld directly, plus nine skills that write working integration code into your project:
+Add Inworld's voice and language APIs to any project from inside Claude Code. The plugin gives Claude eighteen MCP tools for working with Inworld directly, plus thirteen skills that write working integration code into your project:
 
 - **TTS-2**: 200+ languages and natural-language steering (`[whisper]`, `[say with rising excitement]`), plus **TTS-2 Flash** for the lowest latency
 - **Speech-to-text**: Inworld STT-1 in 30 languages: short clips, long recordings with speaker diarization, and live streaming, with optional voice profiling (age, emotion, pitch, vocal style, accent) and custom vocabulary
@@ -27,7 +27,11 @@ Add Inworld's voice and language APIs to any project from inside Claude Code. Th
 | `/inworld:setup` | Detects your stack and scaffolds an Inworld TTS/STT helper module, an `.env.example` entry, and a test call. |
 | `/inworld:connect` | Checks whether Claude can reach Inworld; if not, walks you through signing up and getting your API key to Claude and to your app. |
 | `/inworld:migrate` | Moves existing ElevenLabs, OpenAI, Cartesia, Deepgram or cloud TTS calls to Inworld behind a provider switch. |
+| `/inworld:find-voice` | Finds a voice from your description: searches the library, plays the best matches saying a line from your app, and designs one if nothing fits. |
 | `/inworld:add-voice` | Adds spoken output to one feature in your app, after previewing voices. |
+| `/inworld:speakable-text` | Fixes text that will sound wrong when spoken (IDs, markdown in LLM replies, pronunciation, pauses) and plays before and after. |
+| `/inworld:benchmark-models` | Compares LLMs on your own prompt: time until the voice starts, cost, and how each reply sounds. |
+| `/inworld:latency` | Measures time to first audio from your machine and reviews your pipeline for what slows it down. |
 | `/inworld:add-realtime` | Scaffolds a Realtime voice-agent client: WebSocket, WebRTC, or Twilio. |
 | `/inworld:add-streaming-tts` | Scaffolds a low-latency streaming TTS client. |
 | `/inworld:add-transcription` | Scaffolds transcription of recorded audio: short clips, or long recordings as async jobs with speaker diarization. |
@@ -40,9 +44,13 @@ The skills edit files only in your current project, and Claude Code asks you bef
 
 `list_voices`, `synthesize_speech`, `transcribe_audio`, `clone_voice`, `design_voice`, `publish_voice`, `chat_completion`, `chat_completion_with_audio`, `list_routers`, `search_docs`.
 
+Voice lab: `find_voices`, `compare_voices`, `design_voice`, `publish_voice`, `check_speech_text`, `measure_latency`, `list_llm_models`, `benchmark_models`.
+
 ## What this plugin runs, sends, and stores
 
 **What runs locally.** The plugin starts one local MCP server over stdio with `node scripts/start.mjs`. That short script picks the API key (see Credentials) and loads `build/index.js`, starting it even when no key is set so that `search_docs` works before you have an account; the other tools then return an error explaining how to get a key. `build/index.js` is the MCP server from Inworld's open-source [`@inworld/cli`](https://github.com/inworld-ai/inworld-cli), bundled into a single file so you don't need a build step. Because it is a bundle, it is a large file. `scripts/vendor.sh` shows how it is produced, and `scripts/smoke.mjs` checks the tool contract. Neither script runs during normal use.
+
+It also starts a second, smaller MCP server, the voice lab (`node voice-lab/server.mjs`), for comparing voices, checking text before it's spoken, and benchmarking. It has no dependencies and its source is in `voice-lab/`. In Claude Code, the plugin also registers a mod (`hooks/register.mjs`) that adds play buttons under voice lab results; mods are an early-access Claude Code feature and only load when you've enabled them. In apps that support MCP Apps, voice lab results show in a player card (`voice-lab/voice-compare.html`) instead.
 
 **Where your data goes.** Requests go only to Inworld, over HTTPS:
 
@@ -53,20 +61,21 @@ The skills edit files only in your current project, and Claude Code asks you bef
   - chat messages for the LLM Router
 
   These requests are authenticated with your API key. LLM calls are routed by Inworld to the model provider you choose, such as `openai/...` or `anthropic/...`.
+- The voice lab sends the text, voice descriptions and prompts you give its tools to `api.inworld.ai`: speech synthesis, the voice library, voice design, and, for `benchmark_models`, the LLM Router, which forwards the prompt to each model provider you benchmark. `check_speech_text` runs entirely on your machine unless you ask it to play the result.
 - `search_docs` sends your search query to Inworld's documentation search endpoint (`api.inworld.ai/api/v1/inworld-assistant`).
 
 The plugin sends no telemetry or analytics. It contacts no other services.
 
 **Credentials.**
-- The plugin uses the API key you enter at install time. If you left that blank, it uses `INWORLD_API_KEY` from the environment Claude Code was started in. Either way the key reaches the server as the `INWORLD_API_KEY` environment variable.
-- If neither is set, the server falls back to credentials saved by the Inworld CLI (`inworld login`) on the same machine:
+- The plugin uses the API key you enter at install time (both servers). If you left that blank, it uses `INWORLD_API_KEY` from the environment Claude Code was started in. Either way the key reaches the server as the `INWORLD_API_KEY` environment variable.
+- If neither is set, the main server falls back to credentials saved by the Inworld CLI (`inworld login`) on the same machine:
   - the CLI's config store (`inworld-cli`)
   - the server's own session file at `~/.config/inworld-mcp/session.json`
 
   Expired CLI sessions are refreshed through Google's Firebase token service (`securetoken.googleapis.com`), which Inworld uses for sign-in.
 - The plugin reads no other local credentials.
 
-**What it stores.** The plugin keeps no data of its own. Audio you synthesize is written only to the output path you or Claude choose. Cloned and published voices are saved in your Inworld account. Inworld's handling of API data is covered by the [Inworld privacy policy](https://inworld.ai/privacy).
+**What it stores.** The plugin keeps no data of its own. Audio you synthesize is written only to the output path you or Claude choose. The voice lab saves the clips it renders as MP3 files in your system's temporary folder (`<tmp>/inworld-voice-lab/`), so you can play them; the play buttons read those files. Nothing else is written. Cloned and published voices are saved in your Inworld account. Inworld's handling of API data is covered by the [Inworld privacy policy](https://inworld.ai/privacy).
 
 ## Support
 

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Find a Voice"
+  short_description: "Describe a voice, hear matches, design one if needed"
+  default_prompt: "Help me find the right Inworld voice for this app."

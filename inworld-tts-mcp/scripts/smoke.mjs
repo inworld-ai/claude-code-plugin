@@ -93,6 +93,48 @@ function check(label, entry, env) {
   });
 }
 
+// Voice lab: lists its tools and runs the offline text checker with no key.
+const VOICE_LAB_TOOLS = ["benchmark_models", "check_speech_text", "compare_voices", "design_voice", "find_voices", "list_llm_models", "measure_latency", "publish_voice"];
+
+function checkVoiceLab(home) {
+  return new Promise((resolve, reject) => {
+    const proc = spawn(process.execPath, [join(root, "voice-lab/server.mjs")], {
+      env: { PATH: process.env.PATH, HOME: home, INWORLD_PLUGIN_API_KEY: "" },
+      stdio: ["pipe", "pipe", "inherit"],
+    });
+    const timer = setTimeout(() => done("timed out"), 10000);
+    const done = (err) => {
+      clearTimeout(timer);
+      proc.kill();
+      err ? reject(new Error(`voice lab: ${err}`)) : resolve();
+    };
+    let buf = "";
+    let names;
+    proc.stdout.on("data", (d) => {
+      buf += d;
+      let nl;
+      while ((nl = buf.indexOf("\n")) !== -1) {
+        const msg = JSON.parse(buf.slice(0, nl));
+        buf = buf.slice(nl + 1);
+        if (msg.id === 2) {
+          names = msg.result.tools.map((t) => t.name).sort();
+          if (JSON.stringify(names) !== JSON.stringify(VOICE_LAB_TOOLS)) return done(`tools: ${names.join(", ")}`);
+        }
+        if (msg.id === 3) {
+          const text = msg.result?.content?.[0]?.text ?? "";
+          if (msg.result?.isError || !text.includes("<verbatim>AB12CD34</verbatim>")) return done(`check_speech_text: ${text.slice(0, 200)}`);
+          console.log(`smoke: OK — voice lab, no key: ${names.length} tools, text checker works offline`);
+          return done();
+        }
+      }
+    });
+    const send = (m) => proc.stdin.write(JSON.stringify({ jsonrpc: "2.0", ...m }) + "\n");
+    send({ id: 1, method: "initialize", params: { protocolVersion: "2025-06-18", capabilities: {}, clientInfo: { name: "smoke" } } });
+    send({ id: 2, method: "tools/list" });
+    send({ id: 3, method: "tools/call", params: { name: "check_speech_text", arguments: { text: "Your code is AB12CD34." } } });
+  });
+}
+
 const emptyHome = mkdtempSync(join(tmpdir(), "inworld-smoke-home-"));
 try {
   await check("vendored server", "build/index.js", {
@@ -103,6 +145,7 @@ try {
     HOME: emptyHome,
     INWORLD_PLUGIN_API_KEY: "",
   });
+  await checkVoiceLab(emptyHome);
 } catch (err) {
   console.error(`smoke: ${err.message}`);
   process.exitCode = 1;

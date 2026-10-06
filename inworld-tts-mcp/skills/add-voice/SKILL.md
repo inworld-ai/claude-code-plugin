@@ -25,6 +25,10 @@ audio plug in cleanly?
 
 ## Step 2 — Curate voices
 
+If the user describes the voice they want, or the voice matters (a persona,
+a brand), use `/inworld:find-voice` instead: it searches from the description,
+auditions matches with play buttons, and designs a voice if none fit.
+
 Call `list_voices` (filter by language if relevant). Don't dump the full list —
 pick 5–8 that suit the use case:
 
@@ -60,6 +64,7 @@ needed for product names and place names.
 **Verbatim.** For codes, IDs, order numbers, and license plates, wrap the string so
 it's spelled out character by character: `Your reference is <verbatim>AHAA7771Z</verbatim>.`
 Most reliable on `inworld-tts-2`; requires text normalization to stay on (the default).
+For a full pass over the text the feature speaks, use `/inworld:speakable-text`.
 
 Tell the user the file paths so they can play both. Ask which they want.
 

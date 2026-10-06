@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Inworld voice comparison</title>
+<style>
+  :root { color-scheme: light dark; }
+  body {
+    margin: 0; padding: 12px 14px;
+    font-family: var(--font-sans, system-ui, -apple-system, sans-serif);
+    color: var(--color-text-primary, CanvasText); background: transparent; font-size: 14px;
+  }
+  .line { color: var(--color-text-secondary, GrayText); margin: 0 0 10px; font-style: italic; }
+  .row {
+    display: grid; grid-template-columns: 28px 1fr auto; align-items: center; gap: 10px;
+    padding: 8px 0; border-top: 0.5px solid var(--color-border-primary, rgba(128,128,128,.3));
+  }
+  .row:first-of-type { border-top: none; }
+  .label {
+    width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; font-weight: 600;
+    background: var(--color-background-secondary, rgba(128,128,128,.15));
+  }
+  .voice { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+  .voice b { font-weight: 500; }
+  audio { width: 100%; height: 32px; }
+  button {
+    font: inherit; font-size: 13px; padding: 6px 10px; border-radius: 8px; cursor: pointer;
+    border: 0.5px solid var(--color-border-primary, rgba(128,128,128,.5)); background: transparent; color: inherit;
+  }
+  button:hover { background: var(--color-background-secondary, rgba(128,128,128,.12)); }
+  .meta { margin-top: 8px; font-size: 12px; color: var(--color-text-secondary, GrayText); }
+  .status { font-size: 13px; color: var(--color-text-secondary, GrayText); }
+</style>
+</head>
+<body>
+<p class="status" id="status">Generating voices...</p>
+<div id="root"></div>
+<script>
+  let nextId = 1;
+  const pending = new Map();
+  window.addEventListener("message", (event) => {
+    const m = event.data;
+    if (!m || m.jsonrpc !== "2.0") return;
+    if (m.id !== undefined && pending.has(m.id)) {
+      const { resolve, reject } = pending.get(m.id);
+      pending.delete(m.id);
+      m.error ? reject(new Error(m.error.message)) : resolve(m.result);
+      return;
+    }
+    if (m.method === "ui/notifications/tool-input") showInput(m.params?.arguments);
+    if (m.method === "ui/notifications/tool-result") render(m.params);
+    if (m.method === "ui/notifications/tool-cancelled") setStatus("Cancelled.");
+    if (m.method === "ui/notifications/host-context-changed") applyTheme(m.params);
+    if (m.id !== undefined && m.method) {
+      // Host-to-view requests we don't implement still get an answer.
+      window.parent.postMessage({ jsonrpc: "2.0", id: m.id, result: {} }, "*");
+    }
+  });
+  const request = (method, params) =>
+    new Promise((resolve, reject) => {
+      const id = nextId++;
+      pending.set(id, { resolve, reject });
+      window.parent.postMessage({ jsonrpc: "2.0", id, method, params }, "*");
+    });
+  const notify = (method, params) => window.parent.postMessage({ jsonrpc: "2.0", method, params }, "*");
+  const setStatus = (t) => (document.getElementById("status").textContent = t);
+
+  function applyTheme(ctx) {
+    const vars = ctx?.styles?.variables;
+    if (vars) for (const [k, v] of Object.entries(vars)) if (v) document.documentElement.style.setProperty(k, v);
+    if (ctx?.theme) document.documentElement.style.colorScheme = ctx.theme;
+  }
+  function showInput(args) {
+    if (args?.text) setStatus(`Generating "${args.text}"...`);
+  }
+  function render(result) {
+    const data = result?.structuredContent;
+    const root = document.getElementById("root");
+    if (!data?.clips?.length) {
+      setStatus(result?.content?.[0]?.text || "No audio returned.");
+      return;
+    }
+    setStatus("");
+    root.innerHTML = "";
+    const line = document.createElement("p");
+    line.className = "line";
+    line.textContent = `"${data.text}"`;
+    root.appendChild(line);
+    for (const clip of data.clips) {
+      const row = document.createElement("div");
+      row.className = "row";
+      const label = document.createElement("div");
+      label.className = "label";
+      label.textContent = clip.label;
+      const voice = document.createElement("div");
+      voice.className = "voice";
+      const name = document.createElement("b");
+      name.textContent = clip.voiceId;
+      voice.appendChild(name);
+      if (clip.audio) {
+        const audio = document.createElement("audio");
+        audio.controls = true;
+        audio.preload = "auto";
+        audio.src = `data:${clip.mimeType || "audio/mpeg"};base64,${clip.audio}`;
+        audio.addEventListener("play", () => {
+          for (const other of document.querySelectorAll("audio")) if (other !== audio) other.pause();
+        });
+        voice.appendChild(audio);
+      }
+      const pick = document.createElement("button");
+      pick.textContent = "Use this voice";
+      pick.addEventListener("click", async () => {
+        const text = `Use voice ${clip.label} (${clip.voiceId}) for this project.`;
+        try {
+          await request("ui/message", { role: "user", content: [{ type: "text", text }] });
+          pick.textContent = "Sent";
+        } catch {
+          try {
+            await request("ui/message", { role: "user", content: { type: "text", text } });
+            pick.textContent = "Sent";
+          } catch (e) {
+            pick.textContent = "Couldn't send";
+          }
+        }
+      });
+      row.append(label, voice, pick);
+      root.appendChild(row);
+    }
+    const meta = document.createElement("p");
+    meta.className = "meta";
+    meta.textContent = `Model: ${data.model} - Inworld TTS`;
+    root.appendChild(meta);
+    notify("ui/notifications/size-changed", { width: document.body.scrollWidth, height: document.body.scrollHeight });
+  }
+
+  request("ui/initialize", {
+    appInfo: { name: "inworld-voice-compare", version: "0.1.0" },
+    appCapabilities: { availableDisplayModes: ["inline"] },
+    protocolVersion: "2026-01-26",
+  })
+    .then((res) => {
+      applyTheme(res?.hostContext);
+      notify("ui/notifications/initialized", {});
+    })
+    .catch(() => notify("ui/notifications/initialized", {}));
+</script>
+</body>
+</html>

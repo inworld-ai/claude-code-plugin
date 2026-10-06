@@ -1,6 +1,6 @@
 {
   "name": "inworld",
-  "version": "0.11.0",
+  "version": "0.12.0",
   "description": "Official Inworld AI plugin for Codex — the top-rated TTS-2 model with natural-language steering across 200+ languages, hundreds of professional voices plus instant voice cloning & design, STT with voice profiling (age, emotion, accent), Realtime voice agents, and the LLM Router.",
   "author": {
     "name": "Inworld AI",
@@ -9,17 +9,44 @@
   "homepage": "https://docs.inworld.ai",
   "repository": "https://github.com/inworld-ai/claude-code-plugin",
   "license": "MIT",
-  "keywords": ["tts", "stt", "realtime", "router", "speech", "voice", "audio", "inworld"],
+  "keywords": [
+    "tts",
+    "stt",
+    "realtime",
+    "router",
+    "speech",
+    "voice",
+    "audio",
+    "inworld"
+  ],
   "skills": "./skills/",
   "mcpServers": {
     "inworld": {
       "command": "node",
-      "args": ["scripts/start.mjs"],
+      "args": [
+        "scripts/start.mjs"
+      ],
       "cwd": ".",
       "env": {
         "INWORLD_MCP_TOOLSET": "runtime"
       },
-      "env_vars": ["INWORLD_API_KEY", "INWORLD_API_BASE"]
+      "env_vars": [
+        "INWORLD_API_KEY",
+        "INWORLD_API_BASE"
+      ]
+    },
+    "voice-lab": {
+      "command": "node",
+      "args": [
+        "voice-lab/server.mjs"
+      ],
+      "cwd": ".",
+      "env": {
+      },
+      "env_vars": [
+        "INWORLD_API_KEY",
+        "INWORLD_API_BASE"
+      ]
     }
   },
   "interface": {
@@ -28,7 +55,11 @@
     "longDescription": "Wire Inworld's speech APIs into any project. Scaffold TTS-2 and TTS-2 Flash (200+ languages, natural-language steering, sub-100 ms streaming), batch and streaming STT, Realtime speech-to-speech voice agents, and the OpenAI-compatible LLM Router. Clone or design voices, migrate an existing ElevenLabs, OpenAI, Cartesia, or Deepgram integration, and search Inworld's docs from chat.",
     "developerName": "Inworld AI",
     "category": "Developer Tools",
-    "capabilities": ["Interactive", "Read", "Write"],
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
     "websiteURL": "https://inworld.ai",
     "privacyPolicyURL": "https://inworld.ai/privacy",
     "termsOfServiceURL": "https://inworld.ai/terms",
@@ -38,7 +69,8 @@
     "defaultPrompt": [
       "Add Inworld text-to-speech to this project",
       "Migrate this app's TTS from ElevenLabs to Inworld",
-      "Build a realtime voice agent with Inworld"
+      "Build a realtime voice agent with Inworld",
+      "Find me a calm, warm voice for this app and let me hear it"
     ]
   }
 }

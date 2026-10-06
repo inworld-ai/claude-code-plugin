@@ -57,7 +57,11 @@ In Claude Code, run these as `/inworld:<skill>`. Codex lists them under the plug
 | `/inworld:setup [tts\|stt\|both]` | Detects your stack (Next.js, Express, FastAPI, Flask, plain Node/Python, etc.) and scaffolds a `lib/inworld.{ts,py}` helper module with TTS-2 + STT clients, adds `INWORLD_API_KEY` to `.env.example`, picks a voice, runs a Hello-from-Inworld test. |
 | `/inworld:connect [check]` | Checks whether the agent can reach Inworld; if not, walks through free signup and getting the key to the agent (env var or CLI login) and to your app. |
 | `/inworld:migrate [provider\|path]` | Finds existing ElevenLabs / OpenAI / Cartesia / Deepgram / cloud TTS calls, swaps them to Inworld behind a `TTS_PROVIDER` switch, maps voices and formats, and verifies with side-by-side samples. |
+| `/inworld:find-voice [description]` | Describe the voice you want; it searches the library, plays the best matches saying a line from your app, designs a new voice if nothing fits, and saves the pick to config. |
 | `/inworld:add-voice [where]` | Wires voice output into one specific feature. Browses voices, demos them with and without steering, then edits the relevant route or component. |
+| `/inworld:speakable-text [file\|prompt]` | Finds the text your app speaks and fixes what will sound wrong: `<verbatim>` for booking refs and IDs, markdown in LLM replies, IPA pronunciation, pauses, steering scope. Updates the LLM prompt and plays before/after. |
+| `/inworld:benchmark-models [models]` | Runs your system prompt and a real user turn through several LLMs on Inworld's router (including Inworld-hosted models and the same model on different providers) and compares time to first spoken audio, cost per 1k replies and how each reply sounds in your voice. |
+| `/inworld:latency [flow]` | Measures time to first audio from your machine per model, then reviews your pipeline for streaming, LLM-to-TTS hand-off, keep-alive, WebSocket and region fixes. |
 | `/inworld:add-realtime [browser\|server\|twilio]` | Scaffolds a working Realtime client — WebSocket for server / Twilio, WebRTC for browser. Includes backend token minting, mic capture, audio playback, `session.update` wiring. Includes an OpenAI Realtime migration cheat sheet if you're already on that. |
 | `/inworld:add-streaming-tts [http\|websocket]` | Scaffolds a streaming TTS client for sub-200ms time-to-first-audio. Chunked HTTP for simplicity, WebSocket for cancellation + barge-in support. |
 | `/inworld:add-transcription [short\|long] [diarization]` | Scaffolds transcription of recorded audio with Inworld STT-1: synchronous for short clips, async jobs for long recordings, with speaker diarization, word timestamps, Voice Profile, and custom vocabulary. |
@@ -80,6 +84,21 @@ The plugin's MCP server exposes 10 tools the agent can call directly:
 | `chat_completion_with_audio` | LLM + TTS in one call — chat reply returned as audio plus transcript. Faster than chat → synth because TTS pipelines while the LLM is still generating. |
 | `list_routers` | List your configured Inworld Routers. |
 | `search_docs` | AI search over Inworld's official knowledge: `docs` (docs portal + API reference), `website` (inworld.ai), `resolutions` (support knowledge base), `ui-actions` (Studio UI catalog). Public endpoint, no API key needed. |
+
+### Voice lab tools
+
+A second, dependency-free MCP server (`voice-lab/server.mjs`) covers the parts of building a voice app you do by ear. Clips play from buttons under the result in Claude Code (via the plugin's mod, early access), in an MCP Apps player card in hosts that support it (Claude Desktop chat, claude.ai, ChatGPT, Cursor), and through the OS audio player elsewhere.
+
+| Tool | What it does |
+|---|---|
+| `find_voices` | Search the library from a description: structured filters (gender, age, language, use-case category) plus a free-text query ranked against voice tags and descriptions. `audition_line` renders the top four. |
+| `compare_voices` | The same line in 2–4 voices, A–D. Mix library voices with one-off voice descriptions (ad-hoc voice design). |
+| `design_voice` | Up to 3 previews from a description and an in-character script. Falls back to listen-only previews when the key can't save voices. |
+| `publish_voice` | Save the chosen preview to the voice library. |
+| `check_speech_text` | Offline checker for text sent to TTS: wraps alphanumeric IDs in `<verbatim>`, strips markdown and emoji, flags steering on Flash, unscoped steering, bad `<break>`s, `<phoneme>`, multi-word IPA, ambiguous dates. Optional before/after listen. |
+| `list_llm_models` | The router's LLM catalog with prices per 1M tokens, context, tools and reasoning support. |
+| `benchmark_models` | Your prompt through 1–8 router models: first token, first sentence, first audio (LLM streamed into Inworld TTS), full reply, tok/s, $ per 1k replies; then each reply rendered in your voice. |
+| `measure_latency` | Times streaming TTS from this machine: first-audio p50/p90 and total, per model, optionally with normalization off. |
 
 Realtime, streaming TTS, and streaming STT are intentionally **not** MCP tools — bidirectional streaming audio belongs in your app, not in the agent's MCP transport. The corresponding skills write that code into your project.
 
