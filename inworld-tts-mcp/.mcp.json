@@ -2,10 +2,22 @@
   "mcpServers": {
     "inworld": {
       "command": "node",
-      "args": ["${CLAUDE_PLUGIN_ROOT}/scripts/start.mjs"],
+      "args": [
+        "${CLAUDE_PLUGIN_ROOT}/scripts/start.mjs"
+      ],
       "env": {
         "INWORLD_PLUGIN_API_KEY": "${user_config.api_key}",
         "INWORLD_MCP_TOOLSET": "runtime"
+      }
+    },
+    "voice-lab": {
+      "command": "node",
+      "args": [
+        "${CLAUDE_PLUGIN_ROOT}/voice-lab/server.mjs"
+      ],
+      "env": {
+        "INWORLD_PLUGIN_API_KEY": "${user_config.api_key}",
+        "INWORLD_VOICE_LAB_BUTTONS": "1"
       }
     }
   }

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Voice Latency"
+  short_description: "Measure time to first audio and fix slow pipelines"
+  default_prompt: "Measure Inworld TTS latency from here and find what's slowing down this voice feature."

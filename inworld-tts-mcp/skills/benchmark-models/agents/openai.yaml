@@ -1,0 +1,4 @@
+interface:
+  display_name: "Benchmark Models"
+  short_description: "Compare LLMs on your prompt: first audio, cost, and how replies sound"
+  default_prompt: "Benchmark a few LLMs for this voice agent on our real prompt."
