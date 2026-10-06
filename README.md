@@ -1,21 +1,20 @@
 # Inworld AI — Claude Code Plugin
 
-Official Inworld AI plugin for Claude Code: the top-rated TTS-2 model with natural-language steering across 200+ languages, hundreds of professional voices plus instant voice cloning and design, STT with voice profiling, Realtime voice agents, and the LLM Router. Claude Code wires it into any project in seconds.
+Lets Claude Code add Inworld voice features to your app: text-to-speech, speech-to-text, voice cloning and design, and realtime voice agents.
 
 > Built for Claude Code (terminal, IDE extensions, or the desktop app's Code tab). The voice tools run on your machine as a local MCP server, so they don't load in claude.ai chat or Cowork.
 
-- **TTS-2** — 200+ languages and locales, natural-language steering (`[whisper]`, `[say with rising excitement]`, `[laugh]`), `delivery_mode`, word & character timestamps
-- **TTS-2 Flash** — Inworld's fastest, lowest-cost model: ~20 ms time to first audio, same languages as TTS-2
-- **Streaming TTS** — audio starts playing while it's still being generated, via chunked HTTP or WebSocket (~100 ms server-side time to first audio with TTS-2)
-- **STT** — Inworld STT-1 in 30 languages, with optional Voice Profile (age, emotion, pitch, vocal style, accent) and custom vocabulary for names and jargon
-- **Long-recording transcription** — async jobs for meetings, interviews, and podcasts (up to 512 MB), with speaker diarization ("who said what") and word timestamps
-- **Streaming STT** — live mic → transcript over WebSocket, interim + final results, tunable or manual turn detection
-- **Realtime voice agents** — bidirectional speech-to-speech over WebSocket / WebRTC / Twilio, with optional Router-backed LLM
-- **Instant voice cloning** — a custom voice from a short sample in seconds; use 15–30 seconds of clean audio for the best similarity
-- **Professional voice cloning (beta)** — a fine-tuned clone that's more similar and stable, trained on 10+ minutes of audio; created in the Inworld Portal or with the PVC API
-- **Voice design** — generate voices from a text description (no audio sample required)
-- **LLM Router** — OpenAI-compatible chat completions with traffic-split routing, fallback, and A/B testing
-- **LLM + TTS combined** — one call: chat completion that returns audio directly
+## What you can ask for
+
+Once it's installed, ask Claude Code for things like:
+
+- **"Add a read-aloud button to our blog posts."** Claude previews voices with you, then wires up the API route and the button.
+- **"Transcribe our support-call recordings with speaker labels."** Claude writes a batch job using Inworld STT.
+- **"Build a voice agent for our booking flow."** Claude scaffolds a realtime voice client with secure browser auth.
+- **"Design a voice for our game's narrator."** Claude generates previews you can listen to, then saves the one you pick.
+- **"Why does my TTS call return 401?"** Claude checks Inworld's docs and your code, then fixes it.
+
+Without the plugin, Claude has to guess at Inworld's APIs. With it, Claude calls Inworld directly while you work, so you hear real samples before anything is wired in, and the code it writes follows Inworld's documented patterns.
 
 ## Install
 
@@ -92,14 +91,27 @@ Your booking reference is <verbatim>AHAA7771Z</verbatim>.
 
 **OpenAI compatibility** — apps already using OpenAI's text-to-speech can point the OpenAI SDK at `https://api.inworld.ai/v1` and pick an Inworld model and voice.
 
+## What's included
+
+- **TTS-2** — 200+ languages and locales, natural-language steering (`[whisper]`, `[say with rising excitement]`, `[laugh]`), `delivery_mode`, word & character timestamps
+- **TTS-2 Flash** — Inworld's fastest, lowest-cost model: ~20 ms time to first audio, same languages as TTS-2
+- **Streaming TTS** — audio starts playing while it's still being generated, via chunked HTTP or WebSocket (~100 ms server-side time to first audio with TTS-2)
+- **STT** — Inworld STT-1 in 30 languages, with optional Voice Profile (age, emotion, pitch, vocal style, accent) and custom vocabulary for names and jargon
+- **Long-recording transcription** — async jobs for meetings, interviews, and podcasts (up to 512 MB), with speaker diarization ("who said what") and word timestamps
+- **Streaming STT** — live mic → transcript over WebSocket, interim + final results, tunable or manual turn detection
+- **Realtime voice agents** — bidirectional speech-to-speech over WebSocket / WebRTC / Twilio, with optional Router-backed LLM
+- **Instant voice cloning** — a custom voice from a short sample in seconds; use 15–30 seconds of clean audio for the best similarity
+- **Professional voice cloning (beta)** — a fine-tuned clone that's more similar and stable, trained on 10+ minutes of audio; created in the Inworld Portal or with the PVC API
+- **Voice design** — generate voices from a text description (no audio sample required)
+- **LLM Router** — OpenAI-compatible chat completions with traffic-split routing, fallback, and A/B testing
+- **LLM + TTS combined** — one call: chat completion that returns audio directly
+
 ## Models
 
 | Model | Languages | Latency | Best for |
 |---|---|---|---|
 | `inworld-tts-2` (default) | 200+ | ~100 ms TTFB | Quality, steering, multilingual |
 | `inworld-tts-2-flash` | 200+ (same as TTS-2) | ~20 ms TTFB | Lowest latency and cost; no steering instructions (non-verbal tags like `[laugh]` still work) |
-| `inworld-tts-1.5-max` | 15 | <200 ms | Legacy; still accepted |
-| `inworld-tts-1.5-mini` | 15 | ~120 ms | Legacy; still accepted |
 
 STT (batch and streaming) uses `inworld/inworld-stt-1`: 30 languages, Voice Profile, and configurable turn-taking for streaming.
 

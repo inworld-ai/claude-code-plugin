@@ -50,7 +50,7 @@ export interface StreamingTtsOptions {
   apiKey: string;
   text: string;
   voiceId: string;
-  modelId?: "inworld-tts-2" | "inworld-tts-2-flash" | "inworld-tts-1.5-max" | "inworld-tts-1.5-mini";
+  modelId?: "inworld-tts-2" | "inworld-tts-2-flash";
   audioEncoding?: "MP3" | "LINEAR16" | "OGG_OPUS";
   sampleRateHertz?: number;
   speakingRate?: number;
