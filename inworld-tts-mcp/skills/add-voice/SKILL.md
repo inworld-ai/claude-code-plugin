@@ -52,9 +52,14 @@ Examples of steering that pay off:
 `Welcome. <break time="500ms"/> Let me help you with that.`
 
 **Custom pronunciation.** For proper nouns and technical terms that get mispronounced,
-inline IPA phoneme notation lets you spell it out:
-`Visit <phoneme alphabet="ipa" ph="ˈnaɪkiː">Nike</phoneme>'s site.`
-Use this sparingly — usually only needed for product names and acronyms.
+replace the word with its English IPA wrapped in slashes, one word at a time:
+`Your interests are a perfect match for a honeymoon in /kriːt/.`
+Use standard English IPA only (not ARPAbet). Use this sparingly — usually only
+needed for product names and place names.
+
+**Verbatim.** For codes, IDs, order numbers, and license plates, wrap the string so
+it's spelled out character by character: `Your reference is <verbatim>AHAA7771Z</verbatim>.`
+Most reliable on `inworld-tts-2`; requires text normalization to stay on (the default).
 
 Tell the user the file paths so they can play both. Ask which they want.
 

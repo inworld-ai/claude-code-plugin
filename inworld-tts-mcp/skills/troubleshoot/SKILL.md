@@ -77,9 +77,22 @@ Fast local checks that resolve a large share of issues:
 - **Designed voices disappearing**: design previews expire quickly; they must
   be published (`publish_voice`) to persist. Cloned voices persist automatically.
 - **STT empty transcript**: streaming STT requires LINEAR16 PCM, 16 kHz mono;
-  batch accepts MP3/WAV/FLAC/OGG with `AUTO_DETECT`.
+  batch accepts MP3/WAV/FLAC/OGG with `AUTO_DETECT`. Use Inworld's model,
+  `inworld/inworld-stt-1` (30 languages); when reproducing with
+  `transcribe_audio`, pass `model_id: "inworld/inworld-stt-1"` explicitly.
 - **TTS text limit**: 2,000 chars per synthesize call — split longer text at
-  sentence boundaries.
+  sentence boundaries, or use async synthesis (preview, up to 100,000 chars).
+- **Clone doesn't sound like the speaker**: instant cloning needs 15–30 seconds
+  of clean, single-speaker audio in the target language (samples are trimmed at
+  30 s; voices cloned before Aug 15, 2026 used a 15 s prompt, so re-clone those).
+  For a closer, more stable match, Professional Voice Cloning (beta) trains on
+  10+ minutes of audio.
+- **Pronunciation tags read oddly**: custom pronunciation is English IPA in
+  slashes around one word (`/kriːt/`), not SSML `<phoneme>`. For codes and IDs,
+  use `<verbatim>…</verbatim>`.
+- **Diarization missing**: speaker labels only come from async transcription and
+  streaming STT, with `enableSpeakerDiarization` and `includeWordTimestamps` both
+  set; synchronous transcription doesn't return them.
 - **429s**: per-IP rate limiting — back off a few seconds; don't hammer.
 
 ## Step 4 — Reproduce and verify the fix
