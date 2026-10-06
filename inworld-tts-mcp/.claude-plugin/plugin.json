@@ -1,14 +1,18 @@
 {
   "name": "inworld",
   "displayName": "Inworld AI",
-  "version": "0.10.0",
-  "description": "Official Inworld AI plugin for Claude Code — the top-rated TTS-2 model with natural-language steering across 200+ languages, hundreds of professional voices plus instant voice cloning & design, STT with voice profiling (age, emotion, accent), Realtime voice agents, and the LLM Router.",
+  "version": "0.10.1",
+  "description": "Official Inworld AI plugin for Claude Code — the top-rated TTS-2 model with natural-language steering across 200+ languages, hundreds of professional voices plus instant voice cloning & design, STT with voice profiling (age, emotion, accent), Realtime voice agents, and the LLM Router. Built for Claude Code: its voice tools run on your machine and don't load in claude.ai chat or Cowork.",
   "author": {
     "name": "Inworld AI",
     "url": "https://inworld.ai"
   },
   "homepage": "https://docs.inworld.ai",
   "repository": "https://github.com/inworld-ai/claude-code-plugin",
+  "documentationUrl": "https://docs.inworld.ai",
+  "supportUrl": "https://docs.inworld.ai/portal/support",
+  "privacyPolicyUrl": "https://inworld.ai/privacy",
+  "termsOfServiceUrl": "https://inworld.ai/terms",
   "license": "MIT",
   "keywords": [
     "tts",

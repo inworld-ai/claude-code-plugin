@@ -10,6 +10,7 @@ Add Inworld's voice and language APIs to any project from inside Claude Code. Th
 
 ## Requirements
 
+- Claude Code (terminal, IDE extension, or the desktop app's Code tab). The voice tools run as a local MCP server, so they don't load in claude.ai chat or Cowork.
 - An Inworld account and API key from [platform.inworld.ai/api-keys](https://platform.inworld.ai/api-keys). Claude Code prompts for the key when you enable the plugin and stores it as a sensitive value.
 - Node.js 20 or later on your `PATH`. The MCP server runs locally with `node`.
 
