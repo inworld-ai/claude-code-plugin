@@ -1,0 +1,4 @@
+interface:
+  display_name: "Streaming STT"
+  short_description: "Live microphone transcription"
+  default_prompt: "Add live speech-to-text with Inworld to this app."

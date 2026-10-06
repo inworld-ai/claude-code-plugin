@@ -1,0 +1,4 @@
+interface:
+  display_name: "Add Transcription"
+  short_description: "Transcribe recordings with STT-1, diarization and timestamps"
+  default_prompt: "Add transcription of recorded audio to this app with Inworld STT."

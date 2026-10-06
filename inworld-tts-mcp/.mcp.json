@@ -2,9 +2,9 @@
   "mcpServers": {
     "inworld": {
       "command": "node",
-      "args": ["${CLAUDE_PLUGIN_ROOT}/build/index.js"],
+      "args": ["${CLAUDE_PLUGIN_ROOT}/scripts/start.mjs"],
       "env": {
-        "INWORLD_API_KEY": "${user_config.api_key}",
+        "INWORLD_PLUGIN_API_KEY": "${user_config.api_key}",
         "INWORLD_MCP_TOOLSET": "runtime"
       }
     }

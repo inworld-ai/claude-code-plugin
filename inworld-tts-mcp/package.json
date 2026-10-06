@@ -1,6 +1,6 @@
 {
   "name": "inworld-tts-mcp",
-  "version": "0.10.0",
+  "version": "0.11.0",
   "description": "MCP server for Inworld AI (TTS-2, STT, Realtime, Router, voice cloning, voice design, LLM+TTS) packaged as a Claude Code plugin. The server is vendored from @inworld/cli (single source of truth) — do not edit build/index.js by hand; run scripts/vendor.sh to update it.",
   "type": "module",
   "bin": {

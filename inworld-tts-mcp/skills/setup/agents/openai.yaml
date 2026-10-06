@@ -1,0 +1,4 @@
+interface:
+  display_name: "Inworld Setup"
+  short_description: "Add Inworld TTS and STT to this project"
+  default_prompt: "Set up Inworld text-to-speech in this project and play me a test clip."

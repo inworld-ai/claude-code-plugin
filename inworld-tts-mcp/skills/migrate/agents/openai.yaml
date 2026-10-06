@@ -1,0 +1,4 @@
+interface:
+  display_name: "Migrate to Inworld"
+  short_description: "Move ElevenLabs, OpenAI, or other TTS to Inworld"
+  default_prompt: "Find this app's current TTS provider and migrate it to Inworld behind a switch."

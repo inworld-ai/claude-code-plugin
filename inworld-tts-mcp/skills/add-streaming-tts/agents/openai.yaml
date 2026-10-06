@@ -1,0 +1,4 @@
+interface:
+  display_name: "Streaming TTS"
+  short_description: "Low-latency streaming TTS over HTTP or WebSocket"
+  default_prompt: "Add low-latency streaming Inworld TTS to this app."
