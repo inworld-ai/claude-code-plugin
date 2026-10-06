@@ -1,5 +1,7 @@
 # Testing Guide
 
+For developer-journey testing (first contact, signup, quickstart, migration), see [docs/test-plan.md](docs/test-plan.md).
+
 State of verification for the Inworld Claude Code plugin, plus a structured
 pass for new testers. Last full verification: **v0.6.2, 2026-07-03** (all 9
 MCP tools against the live production API).

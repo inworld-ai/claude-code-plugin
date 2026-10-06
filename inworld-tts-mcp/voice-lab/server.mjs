@@ -24,7 +24,12 @@ const API_BASE = (process.env.INWORLD_API_BASE || "https://api.inworld.ai").repl
 const HERE = dirname(fileURLToPath(import.meta.url));
 const LABELS = ["A", "B", "C", "D", "E", "F", "G", "H"];
 
-const SIGNUP = "https://platform.inworld.ai/signup";
+const utmSource =
+  { "claude-code-plugin": "claude-code", "codex-plugin": "codex" }[process.env.INWORLD_CLIENT_SOURCE] ??
+  "other-agent";
+const SIGNUP =
+  `https://platform.inworld.ai/signup?utm_source=${utmSource}` +
+  "&utm_medium=agent-plugin&utm_campaign=inworld-plugin&utm_content=voice-lab";
 
 let hostSupportsUi = false;
 
@@ -226,7 +231,7 @@ const noKeyError = () => ({
     type: "text",
     text:
       "No Inworld API key available: the user hasn't connected an Inworld account yet. Give them " +
-      `this signup link in your reply: ${SIGNUP} . Then they create a ` +
+      `this exact signup link in your reply, query string included: ${SIGNUP} . Then they create a ` +
       "key at https://platform.inworld.ai/api-keys and export INWORLD_API_KEY before starting a new " +
       "agent session. Don't substitute another speech engine in the meantime.",
   }],
