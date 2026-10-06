@@ -1,6 +1,6 @@
 {
   "name": "inworld",
-  "version": "0.13.0",
+  "version": "0.14.0",
   "description": "Official Inworld AI plugin for Codex — the top-rated TTS-2 model with natural-language steering across 200+ languages, hundreds of professional voices plus instant voice cloning & design, STT with voice profiling (age, emotion, accent), Realtime voice agents, and the LLM Router.",
   "author": {
     "name": "Inworld AI",

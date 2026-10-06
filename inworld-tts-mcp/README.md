@@ -1,6 +1,6 @@
 # Inworld AI for Claude Code
 
-Add Inworld's voice and language APIs to any project from inside Claude Code. The plugin gives Claude eighteen MCP tools for working with Inworld directly, plus thirteen skills that write working integration code into your project:
+Add Inworld's voice and language APIs to any project from inside Claude Code. The plugin gives Claude twenty-three MCP tools for working with Inworld directly, plus sixteen skills that write working integration code into your project:
 
 - **TTS-2**: 200+ languages and natural-language steering (`[whisper]`, `[say with rising excitement]`), plus **TTS-2 Flash** for the lowest latency
 - **Speech-to-text**: Inworld STT-1 in 30 languages: short clips, long recordings with speaker diarization, and live streaming, with optional voice profiling (age, emotion, pitch, vocal style, accent) and custom vocabulary
@@ -32,6 +32,9 @@ Add Inworld's voice and language APIs to any project from inside Claude Code. Th
 | `/inworld:speakable-text` | Fixes text that will sound wrong when spoken (IDs, markdown in LLM replies, pronunciation, pauses) and plays before and after. |
 | `/inworld:benchmark-models` | Compares LLMs on your own prompt: time until the voice starts, cost, and how each reply sounds. |
 | `/inworld:latency` | Measures time to first audio from your machine and reviews your pipeline for what slows it down. |
+| `/inworld:add-llm` | Moves your app's LLM calls to Inworld's LLM Router: one key for 100+ models, with model-id mapping and fallbacks. |
+| `/inworld:configure-router` | Sets up and tests a router: fallbacks, A/B tests, routing by tier or content, shared prompts. |
+| `/inworld:add-decisions` | Replaces yes/no and label parsing of LLM replies with Inworld's Decisions API. |
 | `/inworld:add-realtime` | Scaffolds a Realtime voice-agent client: WebSocket, WebRTC, or Twilio. |
 | `/inworld:add-streaming-tts` | Scaffolds a low-latency streaming TTS client. |
 | `/inworld:add-transcription` | Scaffolds transcription of recorded audio: short clips, or long recordings as async jobs with speaker diarization. |
@@ -44,7 +47,7 @@ The skills edit files only in your current project, and Claude Code asks you bef
 
 `list_voices`, `synthesize_speech`, `transcribe_audio`, `clone_voice`, `design_voice`, `publish_voice`, `chat_completion`, `chat_completion_with_audio`, `list_routers`, `search_docs`.
 
-Voice lab: `find_voices`, `compare_voices`, `design_voice`, `publish_voice`, `check_speech_text`, `measure_latency`, `list_llm_models`, `benchmark_models`.
+Voice lab: `find_voices`, `compare_voices`, `design_voice`, `publish_voice`, `check_speech_text`, `measure_latency`, `list_llm_models`, `benchmark_models`, `resolve_models`, `get_router`, `save_router`, `test_router`, `ask_decision`.
 
 ## What this plugin runs, sends, and stores
 
@@ -61,7 +64,7 @@ It also starts a second, smaller MCP server, the voice lab (`node voice-lab/serv
   - chat messages for the LLM Router
 
   These requests are authenticated with your API key. LLM calls are routed by Inworld to the model provider you choose, such as `openai/...` or `anthropic/...`.
-- The voice lab sends the text, voice descriptions and prompts you give its tools to `api.inworld.ai`: speech synthesis, the voice library, voice design, and, for `benchmark_models`, the LLM Router, which forwards the prompt to each model provider you benchmark. `check_speech_text` runs entirely on your machine unless you ask it to play the result.
+- The voice lab sends the text, voice descriptions and prompts you give its tools to `api.inworld.ai`: speech synthesis, the voice library, voice design, and, for `benchmark_models`, the LLM Router, which forwards the prompt to each model provider you benchmark. `check_speech_text` runs entirely on your machine unless you ask it to play the result. The router tools read and save router configs in your Inworld workspace (`save_router` only when you ask for it), send test chat requests through the router, and send decision questions with their state to `api.inworld.ai/alpha/decisions`.
 - `search_docs` sends your search query to Inworld's documentation search endpoint (`api.inworld.ai/api/v1/inworld-assistant`).
 
 Signup links the plugin shows (in the install prompt, the `connect` skill, and the message a tool returns when no API key is set) carry UTM parameters naming the app and the touchpoint, such as `utm_source=claude-code&utm_content=tool-error`, so Inworld can tell which integration a signup came from. They are only sent if you open the link. To pick the right value, the plugin sets `INWORLD_CLIENT_SOURCE` (`claude-code-plugin` or `codex-plugin`) for its servers; it holds no user data. When a tool fails because no key is set, `scripts/start.mjs` replaces the bundled server's error with one that includes the signup link.

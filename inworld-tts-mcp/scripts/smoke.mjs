@@ -94,7 +94,7 @@ function check(label, entry, env) {
 }
 
 // Voice lab: lists its tools and runs the offline text checker with no key.
-const VOICE_LAB_TOOLS = ["benchmark_models", "check_speech_text", "compare_voices", "design_voice", "find_voices", "list_llm_models", "measure_latency", "publish_voice"];
+const VOICE_LAB_TOOLS = ["ask_decision", "benchmark_models", "check_speech_text", "compare_voices", "design_voice", "find_voices", "get_router", "list_llm_models", "measure_latency", "publish_voice", "resolve_models", "save_router", "test_router"];
 
 function checkVoiceLab(home) {
   return new Promise((resolve, reject) => {

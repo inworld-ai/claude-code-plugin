@@ -16,6 +16,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { checkSpeechText } from "./speech-text.mjs";
 import { createBench } from "./bench.mjs";
+import { createRouterTools } from "./router.mjs";
 
 const UI_URI = "ui://inworld/voice-compare";
 const UI_MIME = "text/html;profile=mcp-app";
@@ -221,9 +222,86 @@ const TOOLS = [
       required: ["prompt"],
     },
   },
+  {
+    name: "resolve_models",
+    title: "Map model ids to Inworld's router",
+    description:
+      "Map the model ids an app uses today (OpenAI \"gpt-4o-mini\", Anthropic \"claude-sonnet-4-5-20250929\", " +
+      "OpenRouter \"anthropic/claude-3.5-sonnet\", etc.) to the closest live ids on Inworld's LLM Router, with prices. " +
+      "Use when moving an app's LLM calls to the router.",
+    inputSchema: {
+      type: "object",
+      properties: { models: { type: "array", items: { type: "string" }, maxItems: 30, description: "Model ids found in the code." } },
+      required: ["models"],
+    },
+  },
+  {
+    name: "get_router",
+    title: "Read a router config",
+    description: "Read one LLM Router config by name (or list the workspace's routers when name is omitted). Routers are called with model \"inworld/<name>\".",
+    inputSchema: { type: "object", properties: { name: { type: "string" } } },
+  },
+  {
+    name: "save_router",
+    title: "Create or update a router",
+    description:
+      "Validate and save an LLM Router config (created if new, updated if it exists): a defaultRoute plus optional " +
+      "conditional routes (CEL on request metadata), each with weighted variants (weights sum to 100) that set the " +
+      "model (provider/model, a bare model name for provider routing, or auto), fallbacks in model_selection.models, " +
+      "provider order, sort metrics, message_templates, text_generation_config and compression. Pass dry_run to only " +
+      "validate and get the JSON and curl. Only save after the user has agreed to the config.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        router: { type: "object", description: "Router JSON as in POST /router/v1/routers (name, displayName, routes, defaultRoute, defaults)." },
+        dry_run: { type: "boolean" },
+      },
+      required: ["router"],
+    },
+  },
+  {
+    name: "test_router",
+    title: "Test how a router serves requests",
+    description:
+      "Send the same chat request several times to a router (or any model id) and report which model served each, " +
+      "fallbacks, and round-trip time. Pass metadata to exercise a conditional route, user to check sticky variants, " +
+      "and extra for request-level options (models, provider, sort, fallback.ttft_timeout).",
+    inputSchema: {
+      type: "object",
+      properties: {
+        model: { type: "string", description: "Router name, inworld/<router>, a provider/model id, or auto." },
+        prompt: { type: "string" },
+        system: { type: "string" },
+        runs: { type: "integer", minimum: 1, maximum: 20 },
+        metadata: { type: "object", description: "Request metadata the router's CEL conditions read (sent as extra_body.metadata)." },
+        user: { type: "string" },
+        extra: { type: "object", description: "Extra top-level request fields, e.g. {\"models\": [...], \"fallback\": {\"ttft_timeout\": \"800ms\"}}." },
+        max_tokens: { type: "integer" },
+      },
+      required: ["model"],
+    },
+  },
+  {
+    name: "ask_decision",
+    title: "Ask a decision question",
+    description:
+      "Run Inworld's Decisions API (preview; TypeSafe Jev): send a state and named typed questions, get probabilities " +
+      "back instead of text. Types: noul (yes/no probability), choice (one of criteria), score (ordered levels). Use to " +
+      "prototype and probe thresholds before writing the call into the user's code.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        state: { description: "What to judge: a string or JSON object with named fields." },
+        questions: { type: "object", description: "Map of name → {type: noul|choice|score, instructions, criteria?}." },
+        model: { type: "string", description: "Default typesafe/jev-latest." },
+      },
+      required: ["state", "questions"],
+    },
+  },
 ];
 
 const bench = createBench({ apiBase: API_BASE });
+const routerTools = createRouterTools({ apiBase: API_BASE, models: (key) => bench.models(key) });
 
 const noKeyError = () => ({
   isError: true,
@@ -620,6 +698,11 @@ const HANDLERS = {
   publish_voice: publishVoice,
   measure_latency: measureLatency,
   list_llm_models: (args, key) => bench.listModels(args, key),
+  resolve_models: (args, key) => routerTools.resolveModels(args, key),
+  get_router: (args, key) => routerTools.getRouter(args, key),
+  save_router: (args, key) => routerTools.saveRouter(args, key),
+  test_router: (args, key) => routerTools.testRouter(args, key),
+  ask_decision: (args, key) => routerTools.askDecision(args, key),
   benchmark_models: (args, key) =>
     bench.benchmark(args, key, { synthesize, newClipDir, saveClip, listenResult, labels: LABELS }),
 };
