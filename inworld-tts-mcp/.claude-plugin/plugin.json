@@ -9,6 +9,7 @@
   },
   "homepage": "https://docs.inworld.ai",
   "repository": "https://github.com/inworld-ai/claude-code-plugin",
+  "icon": "./logo.png",
   "documentationUrl": "https://docs.inworld.ai",
   "supportUrl": "https://docs.inworld.ai/portal/support",
   "privacyPolicyUrl": "https://inworld.ai/privacy",
