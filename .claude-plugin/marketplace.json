@@ -1,6 +1,6 @@
 {
   "name": "inworld",
-  "description": "Official Inworld AI plugins for Claude Code — the top-rated TTS-2 model with natural-language steering across 200+ languages, hundreds of professional voices plus instant voice cloning & design, STT with voice profiling (age, emotion, accent), Realtime voice agents, and the LLM Router.",
+  "description": "Inworld AI's plugin for Claude Code. Install `inworld` to let Claude add Inworld voice features (text-to-speech, speech-to-text, voice agents) to your app.",
   "owner": {
     "name": "Inworld AI",
     "url": "https://inworld.ai"
@@ -9,8 +9,8 @@
     {
       "name": "inworld",
       "source": "./inworld-tts-mcp",
-      "description": "Official Inworld AI plugin for Claude Code — the top-rated TTS-2 model with natural-language steering across 200+ languages, hundreds of professional voices plus instant voice cloning & design, STT with voice profiling (age, emotion, accent), Realtime voice agents, and the LLM Router. Built for Claude Code: its voice tools run on your machine and don't load in claude.ai chat or Cowork.",
-      "version": "0.10.1",
+      "description": "Lets Claude Code add Inworld voice features to your app. Claude can generate and play speech samples, find, clone, and design voices, transcribe audio, and look up answers in Inworld's docs, then write working text-to-speech, speech-to-text, and realtime voice-agent code for your stack. Needs an Inworld API key. Works in Claude Code only.",
+      "version": "0.10.2",
       "category": "ai",
       "keywords": [
         "tts",

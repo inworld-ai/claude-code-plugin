@@ -65,7 +65,7 @@ function authHeaders() {
 export interface SynthesizeOptions {
   text: string;
   voiceId: string;
-  modelId?: "inworld-tts-2" | "inworld-tts-2-flash" | "inworld-tts-1.5-max" | "inworld-tts-1.5-mini";
+  modelId?: "inworld-tts-2" | "inworld-tts-2-flash";
   audioEncoding?: "MP3" | "LINEAR16" | "WAV" | "OGG_OPUS" | "FLAC";
   sampleRateHertz?: number;
   speakingRate?: number;

@@ -1,6 +1,20 @@
 # Inworld AI for Claude Code
 
-Add Inworld's voice and language APIs to any project from inside Claude Code. The plugin gives Claude ten MCP tools for working with Inworld directly, plus seven skills that write working integration code into your project:
+Lets Claude Code add Inworld voice features to your app: text-to-speech, speech-to-text, voice cloning and design, and realtime voice agents. It gives Claude ten tools for working with Inworld directly, plus seven skills that write working integration code into your project.
+
+## What you can ask for
+
+Once it's installed, ask Claude Code for things like:
+
+- **"Add a read-aloud button to our blog posts."** Claude previews voices with you, then wires up the API route and the button.
+- **"Transcribe our support-call recordings with speaker labels."** Claude writes a batch job using Inworld STT.
+- **"Build a voice agent for our booking flow."** Claude scaffolds a realtime voice client with secure browser auth.
+- **"Design a voice for our game's narrator."** Claude generates previews you can listen to, then saves the one you pick.
+- **"Why does my TTS call return 401?"** Claude checks Inworld's docs and your code, then fixes it.
+
+Without the plugin, Claude has to guess at Inworld's APIs. With it, Claude calls Inworld directly while you work, so you hear real samples before anything is wired in, and the code it writes follows Inworld's documented patterns.
+
+## What's included
 
 - **TTS-2**: 200+ languages and natural-language steering (`[whisper]`, `[say with rising excitement]`), plus **TTS-2 Flash** for the lowest latency
 - **Speech-to-text**: Inworld STT-1 in 30 languages: short clips, long recordings with speaker diarization, and live streaming, with optional voice profiling (age, emotion, pitch, vocal style, accent) and custom vocabulary
