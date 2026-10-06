@@ -1,0 +1,4 @@
+interface:
+  display_name: "Configure Router"
+  short_description: "Fallbacks, A/B tests and per-tier routing for LLM calls"
+  default_prompt: "Set up an Inworld router with fallbacks for this app's LLM calls."

@@ -279,5 +279,5 @@ export function createBench({ apiBase }) {
     return out;
   }
 
-  return { listModels, benchmark };
+  return { listModels, benchmark, models };
 }

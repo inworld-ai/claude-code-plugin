@@ -1,0 +1,4 @@
+interface:
+  display_name: "Add Decisions"
+  short_description: "Typed yes/no, choice and score answers with probabilities"
+  default_prompt: "Find the places this app parses yes/no or labels from an LLM and use Inworld Decisions instead."

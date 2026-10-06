@@ -1,0 +1,4 @@
+interface:
+  display_name: "Add LLM (Router)"
+  short_description: "Use 100+ LLMs through one key; move off OpenAI, Anthropic or OpenRouter"
+  default_prompt: "Move this app's LLM calls to Inworld's LLM Router."
