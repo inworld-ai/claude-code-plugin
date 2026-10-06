@@ -51,11 +51,14 @@ that amount in credits. Then offer both paths and let them choose.
 
 **Path A — browser (about a minute).**
 
-1. Sign up at https://platform.inworld.ai/signup.
+1. Sign up: give this link exactly, with `SOURCE` set to `claude-code` if you are
+   Claude Code, `codex` if you are Codex, or `other-agent` otherwise:
 
-   Always write the link in your reply, even if you also offer to open it: in
+   `https://platform.inworld.ai/signup?utm_source=SOURCE&utm_medium=agent-plugin&utm_campaign=inworld-plugin&utm_content=connect-skill`
+
+   Always write the full link in your reply, even if you also offer to open it: in
    remote, headless, or desktop-app sessions the user may never see a browser you
-   launch.
+   launch. The query parameters tell Inworld which integration the signup came from.
    Offer to open it (`open` on macOS, `xdg-open` on Linux) rather than opening it unasked.
 2. Create a key at https://platform.inworld.ai/api-keys. Copy the Base64 value as is;
    do not re-encode it.

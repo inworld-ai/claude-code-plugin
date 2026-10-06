@@ -35,7 +35,7 @@ codex plugin add inworld@inworld
 
 Or install **Inworld AI** from `/plugins` (CLI) or the **Plugins** page (app). Start a new session afterwards. Codex forwards `INWORLD_API_KEY` from your environment to the plugin.
 
-**No account yet?** [Sign up free](https://platform.inworld.ai/signup). The On-Demand plan includes up to 70 minutes of TTS and 400 minutes of STT. The plugin works before you sign up: docs search needs no key, and the `connect` skill walks you through getting one.
+**No account yet?** [Sign up free](https://platform.inworld.ai/signup?utm_source=github&utm_medium=agent-plugin&utm_campaign=inworld-plugin&utm_content=readme). The On-Demand plan includes up to 70 minutes of TTS and 400 minutes of STT. The plugin works before you sign up: docs search needs no key, and the `connect` skill walks you through getting one.
 
 ### Where the plugin finds your key
 
@@ -174,7 +174,7 @@ The script copies the artifact into `build/index.js` and runs `scripts/smoke.mjs
 | MCP config | `inworld-tts-mcp/.mcp.json` (`${CLAUDE_PLUGIN_ROOT}`, `${user_config.api_key}`) | inline `mcpServers` in the Codex manifest (`cwd: "."`, `env_vars` forwards `INWORLD_API_KEY`) |
 | Skill UI metadata | frontmatter | `skills/*/agents/openai.yaml` |
 
-Codex doesn't expand `${...}` placeholders and Claude Code doesn't resolve relative MCP paths, which is why the MCP config lives in two places. `scripts/start.mjs` resolves the key (plugin setting, then `INWORLD_API_KEY`, then the CLI credential store) and starts the server even with no key, so `search_docs` works before signup.
+Codex doesn't expand `${...}` placeholders and Claude Code doesn't resolve relative MCP paths, which is why the MCP config lives in two places. `scripts/start.mjs` resolves the key (plugin setting, then `INWORLD_API_KEY`, then the CLI credential store) and starts the server even with no key, so `search_docs` works before signup. `INWORLD_CLIENT_SOURCE` tags which host launched the server so the CLI can report it; the server ignores it until the CLI reads it.
 
 Check both before a release:
 

@@ -64,6 +64,8 @@ It also starts a second, smaller MCP server, the voice lab (`node voice-lab/serv
 - The voice lab sends the text, voice descriptions and prompts you give its tools to `api.inworld.ai`: speech synthesis, the voice library, voice design, and, for `benchmark_models`, the LLM Router, which forwards the prompt to each model provider you benchmark. `check_speech_text` runs entirely on your machine unless you ask it to play the result.
 - `search_docs` sends your search query to Inworld's documentation search endpoint (`api.inworld.ai/api/v1/inworld-assistant`).
 
+Signup links the plugin shows (in the install prompt, the `connect` skill, and the message a tool returns when no API key is set) carry UTM parameters naming the app and the touchpoint, such as `utm_source=claude-code&utm_content=tool-error`, so Inworld can tell which integration a signup came from. They are only sent if you open the link. To pick the right value, the plugin sets `INWORLD_CLIENT_SOURCE` (`claude-code-plugin` or `codex-plugin`) for its servers; it holds no user data. When a tool fails because no key is set, `scripts/start.mjs` replaces the bundled server's error with one that includes the signup link.
+
 The plugin sends no telemetry or analytics. It contacts no other services.
 
 **Credentials.**
