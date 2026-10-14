@@ -55,7 +55,7 @@ The skills edit files only in your current project, and Claude Code asks you bef
 
 ## What this plugin runs, sends, and stores
 
-**What runs locally.** The plugin starts one local MCP server over stdio with `node build/index.js`. That file is the MCP server from Inworld's open-source [`@inworld/cli`](https://github.com/inworld-ai/inworld-cli), bundled into a single file so you don't need a build step. Because it is a bundle, it is a large file. `scripts/vendor.sh` shows how it is produced, and `scripts/smoke.mjs` checks the tool contract. Neither script runs during normal use.
+**What runs locally.** The plugin starts one local MCP server over stdio with `node launcher.mjs`. The launcher reads this plugin's version and loads `build/index.js`, the MCP server from Inworld's open-source [`@inworld/cli`](https://github.com/inworld-ai/inworld-cli), bundled into a single file so you don't need a build step. Because it is a bundle, it is a large file. `scripts/vendor.sh` shows how it is produced, `vendor-source.json` records its exact source and hash, and `scripts/smoke.mjs` checks the tool contract and request attribution. Neither script runs during normal use.
 
 **Where your data goes.** Requests go only to Inworld, over HTTPS:
 
@@ -68,7 +68,7 @@ The skills edit files only in your current project, and Claude Code asks you bef
   These requests are authenticated with your API key. LLM calls are routed by Inworld to the model provider you choose, such as `openai/...` or `anthropic/...`.
 - `search_docs` sends your search query to Inworld's documentation search endpoint (`api.inworld.ai/api/v1/inworld-assistant`).
 
-The plugin sends no telemetry or analytics. It contacts no other services.
+API requests include an `x-user-agent` header identifying `inworld-claude-code-plugin`, its version, the underlying CLI SDK version, operating system, and Node.js major version. This lets Inworld attribute API usage to the plugin. The plugin sends no separate telemetry or analytics events. It contacts no other services.
 
 **Credentials.**
 - The plugin uses the API key you enter at install time. The key is passed to the server as the `INWORLD_API_KEY` environment variable.
