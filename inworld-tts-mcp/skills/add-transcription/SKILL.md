@@ -7,7 +7,7 @@ description: |
   timestamps, Voice Profile, and custom vocabulary. Use when the user wants to
   transcribe files or recordings rather than live microphone audio.
 argument-hint: "[short|long] [diarization]"
-allowed-tools: Read, Edit, Write, Glob, Grep, Bash, Agent, mcp__plugin_inworld_inworld__transcribe_audio, mcp__plugin_inworld_inworld__search_docs
+allowed-tools: Read, Edit, Write, Glob, Grep, Agent, mcp__plugin_inworld_inworld__transcribe_audio, mcp__plugin_inworld_inworld__search_docs
 ---
 
 # Add Transcription Skill
