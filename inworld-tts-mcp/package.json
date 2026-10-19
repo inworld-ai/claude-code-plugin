@@ -4,14 +4,18 @@
   "description": "MCP server for Inworld AI (TTS-2, STT, Realtime, Router, voice cloning, voice design, LLM+TTS) packaged as a Claude Code plugin. The server is vendored from @inworld/cli (single source of truth) — do not edit build/index.js by hand; run scripts/vendor.sh to update it.",
   "type": "module",
   "bin": {
-    "inworld-tts-mcp": "./build/index.js"
+    "inworld-tts-mcp": "./launcher.mjs"
   },
   "scripts": {
     "vendor": "./scripts/vendor.sh",
-    "start": "node build/index.js"
+    "start": "node launcher.mjs",
+    "test": "node scripts/smoke.mjs"
   },
   "files": [
-    "build"
+    "build",
+    "launcher.mjs",
+    ".claude-plugin/plugin.json",
+    "vendor-source.json"
   ],
   "license": "MIT"
 }
