@@ -7,7 +7,7 @@ description: |
   dictation, voice notes, meeting transcription, voice commands — any feature
   that needs live mic → text without the full LLM+TTS Realtime loop.
 argument-hint: "[browser|server]"
-allowed-tools: Read, Edit, Write, Glob, Grep, Bash, Agent
+allowed-tools: Read, Edit, Write, Glob, Grep, Agent
 ---
 
 # Add Streaming STT Skill

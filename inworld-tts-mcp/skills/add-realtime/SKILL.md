@@ -7,7 +7,7 @@ description: |
   end-to-end within minutes. Use when the user wants live two-way voice
   conversations powered by an LLM + Inworld TTS-2.
 argument-hint: "[browser|server|twilio]"
-allowed-tools: Read, Edit, Write, Glob, Grep, Bash, Agent, mcp__plugin_inworld_inworld__list_routers, mcp__plugin_inworld_inworld__chat_completion
+allowed-tools: Read, Edit, Write, Glob, Grep, Agent, mcp__plugin_inworld_inworld__list_routers, mcp__plugin_inworld_inworld__chat_completion
 ---
 
 # Add Realtime Skill
@@ -21,18 +21,19 @@ Claude's process — it must live in the user's app. This skill writes that code
 
 ## Migrating from OpenAI Realtime?
 
-If the user already has working OpenAI Realtime code (`wss://api.openai.com/v1/realtime`),
-this is a near-drop-in swap:
+If the user already has working OpenAI Realtime code, this is a near-drop-in swap.
+Only the Inworld side needs changing; leave their existing OpenAI config alone
+until the Inworld path works:
 
-| What | OpenAI | Inworld |
-|---|---|---|
-| WebSocket URL | `wss://api.openai.com/v1/realtime?model=...` | `wss://api.inworld.ai/api/v1/realtime/session?key=<sid>&protocol=realtime` |
-| WebRTC POST  | `https://api.openai.com/v1/realtime` | `https://api.inworld.ai/v1/realtime/calls` |
-| Server auth   | `Authorization: Bearer sk-...` | `Authorization: Basic <inworld-api-key>` |
-| Browser auth  | Ephemeral token | Backend-minted session token (`Authorization: Bearer <token>`) |
-| `session.update` model | OpenAI model ids | Any provider model (`openai/...`, `anthropic/...`) or an Inworld Router (`inworld/<name>`) |
-| TTS voice     | OpenAI voices (alloy, echo, ...) | Inworld TTS-2 voices (run `list_voices`) |
-| Message schema| Same | Same |
+| What | Change it to (Inworld) |
+|---|---|
+| WebSocket URL | `wss://api.inworld.ai/api/v1/realtime/session?key=<sid>&protocol=realtime` |
+| WebRTC POST  | `https://api.inworld.ai/v1/realtime/calls` |
+| Server auth   | `Authorization: Basic <inworld-api-key>` |
+| Browser auth  | Backend-minted session token (`Authorization: Bearer <token>`) |
+| `session.update` model | Any provider model (`openai/...`, `anthropic/...`) or an Inworld Router (`inworld/<name>`) |
+| TTS voice     | Inworld TTS-2 voices (run `list_voices`) instead of OpenAI's voice names |
+| Message schema| Unchanged: same events and payloads |
 
 If the user is on OpenAI Realtime today, propose this skill as a 30-minute migration with
 near-zero behavioral change but access to Inworld's TTS-2 voices, Router-backed LLM choice,

@@ -7,7 +7,7 @@ description: |
   output, has auth/API-key trouble, or asks a how-do-I question about Inworld —
   before escalating to Inworld support.
 argument-hint: "[error message or description of the problem]"
-allowed-tools: Read, Edit, Write, Glob, Grep, Bash, Agent, mcp__plugin_inworld_inworld__search_docs, mcp__plugin_inworld_inworld__list_voices, mcp__plugin_inworld_inworld__synthesize_speech, mcp__plugin_inworld_inworld__transcribe_audio, mcp__plugin_inworld_inworld__chat_completion
+allowed-tools: Read, Edit, Write, Glob, Grep, Agent, mcp__plugin_inworld_inworld__search_docs, mcp__plugin_inworld_inworld__list_voices, mcp__plugin_inworld_inworld__synthesize_speech, mcp__plugin_inworld_inworld__transcribe_audio, mcp__plugin_inworld_inworld__chat_completion
 ---
 
 # Inworld Troubleshoot Skill
