@@ -123,12 +123,16 @@ To change server behavior, change it in the CLI repo, then re-vendor:
 
 ```
 cd inworld-tts-mcp
-./scripts/vendor.sh          # pinned npm version (see CLI_VERSION in the script)
-./scripts/vendor.sh 1.3.1    # specific npm version
-./scripts/vendor.sh ~/code/inworld-cli   # local CLI checkout (must be built)
+./scripts/vendor.sh          # rebuild the exact source in vendor-source.json
+./scripts/vendor.sh 1.4.0    # specific npm version, once published
+./scripts/vendor.sh ~/code/inworld-cli   # build a clean local CLI checkout
 ```
 
-The script copies the artifact into `build/index.js` and runs `scripts/smoke.mjs`, which boots it standalone and asserts the 10-tool contract. The vendored `build/index.js` is committed so end-users don't need a build step.
+The script builds the pinned CLI commit with its lockfile, verifies the artifact SHA-256, and runs `scripts/smoke.mjs`. `vendor-source.json` records the upstream version, commit, and bundle hash. A local checkout must be clean and is rebuilt before copying, so attribution changes can ship in this plugin without waiting for an npm release. An explicit npm version can be used after that version includes the required attribution support.
+
+The smoke test boots the configured launcher, asserts the 10-tool contract, and calls the bundled LLM, TTS, STT, and LLM+TTS tools against a local mock API using a fake key. It checks that actual requests identify both the plugin and the underlying CLI SDK. It makes no paid API calls. Run it separately with `npm test` from `inworld-tts-mcp`.
+
+`launcher.mjs` reads the plugin version from `.claude-plugin/plugin.json` and sets the shared CLI's `INWORLD_CLIENT_APP` / `INWORLD_CLIENT_APP_VERSION` before loading the bundle. The vendored `build/index.js` remains committed so end-users need no build step.
 
 ### Targeting a non-prod environment
 
