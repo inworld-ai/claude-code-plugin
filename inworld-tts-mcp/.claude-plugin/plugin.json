@@ -1,7 +1,7 @@
 {
   "name": "inworld",
   "displayName": "Inworld AI",
-  "version": "0.10.3",
+  "version": "0.10.4",
   "description": "Lets Claude Code add Inworld voice features to your app. Claude can generate and play speech samples, find, clone, and design voices, transcribe audio, and look up answers in Inworld's docs, then write working text-to-speech, speech-to-text, and realtime voice-agent code for your stack. Needs an Inworld API key. Works in Claude Code only.",
   "author": {
     "name": "Inworld AI",
