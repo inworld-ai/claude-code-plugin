@@ -1,8 +1,7 @@
 {
   "package": "@inworld/cli",
-  "version": "1.4.0",
-  "source": "git",
+  "version": "1.5.0",
+  "source": "npm",
   "repository": "https://github.com/inworld-ai/inworld-cli.git",
-  "revision": "351c5b36a27bba946ec4e55f41001440a927164d",
-  "artifactSha256": "6a1948f16dc42eec7586bbf1bfac81f41c630618854ef01af9002df022adffaf"
+  "artifactSha256": "1941d9490a361a2e7ed0ef487dad34723452ed73f704dd8795db6452197e6244"
 }
