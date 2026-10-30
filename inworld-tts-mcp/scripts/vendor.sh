@@ -3,7 +3,7 @@
 # Usage:
 #   scripts/vendor.sh                       # rebuild pinned vendor-source.json
 #   scripts/vendor.sh /path/to/inworld-cli   # build a clean local CLI checkout
-#   scripts/vendor.sh 1.4.0                  # vendor an explicit npm release
+#   scripts/vendor.sh 1.5.0                  # vendor an explicit npm release
 set -euo pipefail
 
 PLUGIN_ROOT="$(cd "$(dirname "$0")/.." && pwd)"

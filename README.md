@@ -124,11 +124,11 @@ To change server behavior, change it in the CLI repo, then re-vendor:
 ```
 cd inworld-tts-mcp
 ./scripts/vendor.sh          # rebuild the exact source in vendor-source.json
-./scripts/vendor.sh 1.4.0    # specific npm version, once published
+./scripts/vendor.sh 1.5.0    # a published npm version
 ./scripts/vendor.sh ~/code/inworld-cli   # build a clean local CLI checkout
 ```
 
-The script builds the pinned CLI commit with its lockfile, verifies the artifact SHA-256, and runs `scripts/smoke.mjs`. `vendor-source.json` records the upstream version, commit, and bundle hash. A local checkout must be clean and is rebuilt before copying, so attribution changes can ship in this plugin without waiting for an npm release. An explicit npm version can be used after that version includes the required attribution support.
+The script fetches the pinned source (a published npm version, or a CLI commit built with its lockfile), verifies the artifact SHA-256, and runs `scripts/smoke.mjs`. `vendor-source.json` records the upstream version, the source (`npm` or `git` with its commit), and the bundle hash. A local checkout must be clean and is rebuilt before copying, so a CLI change can be vendored before it is released to npm.
 
 The smoke test boots the configured launcher, asserts the 10-tool contract, and calls the bundled LLM, TTS, STT, and LLM+TTS tools against a local mock API using a fake key. It checks that actual requests identify both the plugin and the underlying CLI SDK. It makes no paid API calls. Run it separately with `npm test` from `inworld-tts-mcp`.
 
